@@ -3,8 +3,56 @@ $tipe = @$_GET['tipe'];
 $cek = "";
 $err = "";
 $content = "";
+session_start();
+
+function unlinkDir($dir)
+{
+    $dirs = array($dir);
+    $files = array() ;
+    for($i=0;;$i++)
+    {
+        if(isset($dirs[$i]))
+            $dir =  $dirs[$i];
+        else
+            break ;
+
+        if($openDir = opendir($dir))
+        {
+            while($readDir = @readdir($openDir))
+            {
+                if($readDir != "." && $readDir != "..")
+                {
+
+                    if(is_dir($dir."/".$readDir))
+                    {
+                        $dirs[] = $dir."/".$readDir ;
+                    }
+                    else
+                    {
+
+                        $files[] = $dir."/".$readDir ;
+                    }
+                }
+            }
+
+        }
+
+    }
 
 
+
+    foreach($files as $file)
+    {
+        unlink($file) ;
+
+    }
+    $dirs = array_reverse($dirs) ;
+    foreach($dirs as $dir)
+    {
+        rmdir($dir) ;
+    }
+
+}
 if(!empty($tipe)){
   include "../include/config.php";
   foreach ($_POST as $key => $value) {
@@ -27,7 +75,7 @@ switch($tipe){
 
         // $listImage = getImage("../temp","../images/produk/$namaProduk");
         // $imageTitle = baseToImage($gambarProduk,"../images/produk/$namaProduk/title.jpg");
-        $listImage = getImage("temp","images/produk/$namaProduk");
+        $listImage = getImage("temp/".$_SESSION['username'],"images/produk/$namaProduk");
         $imageTitle = baseToImage($gambarProduk,"images/produk/$namaProduk/title.jpg");
         $data = array(
                 'nama_produk' => $namaProduk,
@@ -62,7 +110,7 @@ switch($tipe){
             if(is_file($file))
               unlink($file); // delete file
           }
-        $listImage = getImage("temp","images/produk/$namaProduk");
+        $listImage = getImage("temp/".$_SESSION['username'],"images/produk/$namaProduk");
         $imageTitle = baseToImage($gambarProduk,"images/produk/$namaProduk/title.jpg");
         $data = array(
                 'nama_produk' => $namaProduk,
@@ -83,6 +131,8 @@ switch($tipe){
     }
 
     case 'deleteProduk':{
+      $getData = sqlArray(sqlQuery("select * from produk where id = '$id'"));
+      unlinkDir("images/produk/".$getData['nama_produk']);
       $query = "delete from produk where id = '$id'";
       sqlQuery($query);
       $cek = $query;
@@ -90,30 +140,30 @@ switch($tipe){
     break;
     }
     case 'removeTemp':{
-      unlink('temp/'.$id);
+      unlink('temp/'.$_SESSION['username']."/".$id);
       echo generateAPI($cek,$err,$content);
     break;
     }
 
     case 'updateProduk':{
-      clearDirectory("temp");
+      clearDirectory("temp/".$_SESSION['username']);
       $getData = sqlArray(sqlQuery("select * from produk where id = '$id'"));
       $decodedJSON = json_decode($getData['screen_shot']);
       for ($i=0; $i < sizeof($decodedJSON) ; $i++) {
           $explodeNamaGambar = explode('/',$decodedJSON[$i]);
-          copy($decodedJSON[$i],"temp/".$explodeNamaGambar[3]);
+          copy($decodedJSON[$i],"temp/".$_SESSION['username']."/".$explodeNamaGambar[3]);
           $jsonScreenshot[] = array(
                     'name' => $explodeNamaGambar[3],
                     'type' => 'image/jpeg',
-                    'imageLocation' => "temp/".$explodeNamaGambar[3],
+                    'imageLocation' => "temp/".$_SESSION['username']."/".$explodeNamaGambar[3],
           );;
       }
 
 
 
       $type = pathinfo($getData['image_title'], PATHINFO_EXTENSION);
-			$data = file_get_contents($getData['image_title']);
-			$baseOfFile = 'data:image/' . $type . ';base64,' . base64_encode($data);
+      $data = file_get_contents($getData['image_title']);
+      $baseOfFile = 'data:image/' . $type . ';base64,' . base64_encode($data);
       $content = array("namaProduk" => $getData['nama_produk']
                       ,"statusPublish" => $getData['status']
                       , "deskripsi" => $getData['deskripsi']
@@ -140,7 +190,7 @@ switch($tipe){
                           <td><img src='$image_title'  class='materialboxed' style='width:100px;height:100px;'></img> </td>
                           <td>".generateDate($tanggal)."</td>
                           <td>$status</td>
-                          <td><input type='button'  class='waves-effect waves-light btn' value='Show'></td>
+                          <td><input type='button'  class='waves-effect waves-light btn btn-primary' value='Show'></td>
                           <td class='text-right'>
                               <a onclick=updateProduk($id) class='btn btn-simple btn-warning btn-icon edit'><i class='material-icons'>dvr</i></a>
                               <a onclick=deleteProduk($id) class='btn btn-simple btn-danger btn-icon remove'><i class='material-icons'>close</i></a>
@@ -185,7 +235,7 @@ switch($tipe){
             <div class="container-fluid">
                 <div class="row">
                     <!-- Start Modal -->
-                    <div class="col-md-12">
+                    <!-- <div class="col-md-12">
                         <div class="card">
                             <div class="card-content">
                                 <div class="row">
@@ -197,43 +247,135 @@ switch($tipe){
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </div> -->
                     <!-- End Modal -->
 
+                    <div class="col-md-12">
+                            <div class="card">
+                                <div class="card-content">
+                                    <ul class="nav nav-pills nav-pills-primary">
+                                        <li class="active">
+                                            <a href="#dataProduk" id='data1' data-toggle="tab" aria-expanded="true" onclick="clearTemp();">Produk</a>
+                                        </li>
+                                        <li>
+                                            <a href="#produkBaru" id='data2' data-toggle="tab" aria-expanded="false" onclick="baruProduk();">Baru</a>
+                                        </li>
+                                    </ul>
+                                    <div class="tab-content">
+                                        <div class="tab-pane active" id="dataProduk">
+                                            <div class="col-md-12" id='tableInformasi'>
+                                              <div class="card">
+                                                  <div class="card-header card-header-icon" data-background-color="purple">
+                                                      <i class="material-icons">assignment</i>
+                                                  </div>
+                                                  <div class="card-content">
+                                                      <h4 class="card-title">Data Produk</h4>
+                                                      <div class="toolbar">
+                                                          <!--        Here you can write extra buttons/actions for the toolbar              -->
+                                                      </div>
+                                                      <div class="material-datatables">
+                                                          <table id="datatables" class="table table-striped table-no-bordered table-hover" cellspacing="0" width="100%" style="width:100%">
+                                                              <thead>
+                                                                  <tr>
+                                                                      <th>Judul</th>
+                                                                      <th>Posisi</th>
+                                                                      <th>Tanggal</th>
+                                                                      <th>Penulis</th>
+                                                                      <th>Status</th>
+                                                                      <th class="disabled-sorting text-right">Actions</th>
+                                                                  </tr>
+                                                              </thead>
+                                                              <tbody>
+                                                              </tbody>
+                                                          </table>
+                                                      </div>
+                                                  </div>
+                                                  <!-- end content-->
+                                              </div>
+                                              <!--  end card  -->
+                                          </div>
+                                        </div>
+                                        <div class="tab-pane" id="produkBaru">
+                                            <div class="row">
+                                              <div class="col-lg-3 col-md-6 col-sm-3">
+                                                  <?php
+                                                    $arrayStatus = array(
+                                                              array('1','PUBLISH'),
+                                                              array('2','NON PUBLISH'),
+                                                    );
+                                                    echo cmbArray("statusPublish","1",$arrayStatus,"STATUS","class='selectpicker' data-style='btn btn-primary btn-round' title='Single Select' data-size='7'")
+                                                  ?>
+                                              </div>
+                                            </div>
+                                            <div class="row">
+                                              <div class="col-md-4 col-sm-4">
+                                                <div class="fileinput fileinput-new text-center" data-provides="fileinput">
+                                                    <div class="fileinput-new thumbnail">
+                                                        <img  src="assets/img/image_placeholder.jpg" id='tempImageProduk' alt="...">
+                                                    </div>
+                                                    <div class="fileinput-preview fileinput-exists thumbnail"></div>
+                                                    <div>
+                                                        <span class="btn btn-rose btn-round btn-file">
+                                                            <span class="fileinput-new">Select image</span>
+                                                            <span class="fileinput-exists">Change</span>
+                                                            <input type="file" accept='image/x-png,image/gif,image/jpeg' onchange="imageChanged();" id='imageProduk' name="imageProduk">
+                                                        </span>
+                                                        <a href="#pablo" class="btn btn-danger btn-round fileinput-exists" data-dismiss="fileinput"><i class="fa fa-times"></i> Remove</a>
+                                                    </div>
+                                                </div>
+                                              </div>
+                                            </div>
+                                            <div class="row">
+                                              <div class="col-lg-12">
+                                                <form method="#" action="#">
+                                                  <div class="form-group label-floating">
+                                                      <label class="control-label">Nama Produk</label>
+                                                      <input type="text" id="namaProduk" class="form-control">
+                                                  </div>
+                                                </form>
+                                              </div>
+                                            </div>
+                                            <div class="row">
+                                              <div class="col-md-12 col-sm-12">
+                                                Screen Shot
 
+                                                  <form action="upload.php" id='dropzone'  >
+                                                    <!-- <div class="dz-default dz-message" ><span>Drop files here to upload</span>
+                                                    </div> -->
+                                                  </form>
+                                                  <input type="file" multiple="multiple"  accept='image/x-png,image/gif,image/jpeg' class="dz-hidden-input" style="visibility: hidden; position: absolute; top: 0px; left: 0px; height: 0px; width: 0px;">
+                                              </div>
+                                            </div>
+                                            <div class="row">
+                                              <!-- BEGIN SUMMERNOTE -->
+                                              <div class="card">
+                                                  <div class="card-body no-padding">
+                                                      <div id="summernote">
+                                                      </div>
+                                                  </div><!--end .card-body -->
+                                              </div><!--end .card -->
+                                              <!-- END SUMMERNOTE -->
+                                            </div>
+                                            <div class="row">
+                                              <div class="col-lg-12">
+                                                <button type="button" class="btn btn-primary" id='buttonSubmit' onclick="saveProduk();" data-dismiss="modal">Simpan</button>
+                                              </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
 
                     <div class="col-md-12" id='tableProduk'>
                         <div class="card">
-                            <div class="card-header card-header-icon" data-background-color="purple">
-                                <i class="material-icons">assignment</i>
-                            </div>
-                            <div class="card-content">
-                                <h4 class="card-title">Data produk</h4>
-                                <div class="toolbar">
-                                    <!--        Here you can write extra buttons/actions for the toolbar              -->
-                                </div>
-                                <div class="material-datatables">
-                                    <table id="datatables" class="table table-striped table-no-bordered table-hover" cellspacing="0" width="100%" style="width:100%">
-                                        <thead>
-                                            <tr>
-                                                <th>Judul</th>
-                                                <th>Posisi</th>
-                                                <th>Tanggal</th>
-                                                <th>Penulis</th>
-                                                <th>Status</th>
-                                                <th class="disabled-sorting text-right">Actions</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
+
                             <!-- end content-->
                         </div>
                         <!--  end card  -->
                     </div>
                     <!-- end col-md-12 -->
+
                 </div>
                 <!-- end row -->
             </div>
@@ -336,7 +478,7 @@ switch($tipe){
             </div>
         </div>
 <?php
-      clearDirectory("temp");
+      clearDirectory("temp/".$_SESSION['username']);
      break;
      }
 

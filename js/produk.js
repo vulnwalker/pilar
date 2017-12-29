@@ -95,7 +95,7 @@ function removeTemp(id){
 }
 function baruProduk(){
 
-          $("#formProdukBaru").modal();
+          // $("#formProdukBaru").modal();
           $("#buttonSubmit").attr("onclick","saveProduk()");
                 Dropzone.autoDiscover = false;
                   var myDropzone = new Dropzone("#dropzone", {
@@ -111,7 +111,17 @@ function baruProduk(){
 
                   });
                   $("#dropzone").attr('class','dropzone dz-clickable');
+                  $("#namaProduk").val("");
+                  $("#statusPublish").val(1);
+                  $("#summernote").code("");
+                  $("#buttonSubmit").attr("onclick","saveProduk()");
+                  $("#tempImageProduk").attr("src","assets/img/image_placeholder.jpg");
+                  $("#gambarProduk").val("");
 
+}
+function clearTemp(){
+  $("#data2").text("Baru");
+  $("#data2").click();
 }
 function updateProduk(id){
   $.ajax({
@@ -121,7 +131,8 @@ function updateProduk(id){
       success: function(data) {
       var resp = eval('(' + data + ')');
         if(resp.err==''){
-          $("#formProdukBaru").modal();
+          $("#data2").text("Edit");
+          $("#data2").click();
           $("#namaProduk").val(resp.content.namaProduk);
           $("#statusPublish").val(resp.content.statusPublish);
           $("#summernote").code(resp.content.deskripsi);

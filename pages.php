@@ -109,8 +109,6 @@ if($page == "acara"){?>
         $('.card .material-datatables label').addClass('form-group');
 
 
-
-
     });
 </script>
 </html>

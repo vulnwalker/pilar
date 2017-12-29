@@ -184,7 +184,7 @@ else
     <script src="//cdn.socket.io/socket.io-1.2.0.js"></script>
     <script>
         var socket = io('//<?php echo $_SERVER['HTTP_HOST']; ?>:3421');
-        var username = '<?php echo $_GET["username"]; ?>';
+        var username = '<?php echo $_SESSION["username"]; ?>';
         var room = '<?php echo $room; ?>';
         var isStaff = <?php echo empty($_GET['join']) ? 'false' : 'true'; ?>;
 
@@ -218,7 +218,7 @@ else
 
             if (data.isStaff)
             {
-                data.message = '<span class="label label-primary"><?php echo $_SESSION['username'] ?></span> ' + data.message;
+                data.message = '<span class="label label-primary">CS</span> ' + data.message;
             }else{
                 data.message = '<span class="label label-primary">'+data.sender+'</span> ' + data.message;
             }

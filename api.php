@@ -22,6 +22,10 @@ switch($page){
     include 'pages/setting.php';
     break;
   }
+  case 'chating':{
+    include 'pages/chating.php';
+    break;
+  }
 
   default:{
 

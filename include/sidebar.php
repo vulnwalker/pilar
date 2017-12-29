@@ -94,7 +94,6 @@
                                       <p>Live Chat</p>
                                   </a>
                               </li>
-
                               ";
 
 

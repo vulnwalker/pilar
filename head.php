@@ -37,9 +37,12 @@
     <link href="assets/css/demo.css" rel="stylesheet" />
     <!--     Fonts and icons     -->
     <link href="maxcdn.bootstrapcdn.com/font-awesome/latest/css/font-awesome.min.css" rel="stylesheet">
-    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Material+Icons" />
-    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <!-- <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Material+Icons" /> -->
+    <link rel="stylesheet" type="text/css" href="assets/css/font-google.css">
+    <!-- <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/icon?family=Material+Icons"> -->
+    <link rel="stylesheet" type="text/css" href="assets/css/font-google2.css">
     <link rel="stylesheet" type="text/css" href="assets/css/summernote.css">
 
     <link type="text/css" rel="stylesheet" href="assets/css/font-awesome.min.css?1422529194" />
     <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <!-- <link rel="stylesheet" type="text/css" href="assets/css/font-awesome2.min.css"> -->

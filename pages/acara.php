@@ -198,204 +198,7 @@ switch($tipe){
         </script>
 
         <script src="js/acara.js"></script>
-        <style>
 
-#map {
-height: 100%;
-}
-
-
-.controls {
-margin-top: 10px;
-border: 1px solid transparent;
-border-radius: 2px 0 0 2px;
-box-sizing: border-box;
--moz-box-sizing: border-box;
-height: 32px;
-outline: none;
-text-color:white;
-box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
-}
-        </style>
-        <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCJNf9tt4XIkzl5mAaAA0aehyVrdaS6awU&libraries=places&callback=initMap"
-            async ></script>
-        <script>
-          var markers = [];
-          var map;
-          function initMap() {
-            var origin = {lat: -6.9066217615554235, lng: 107.6347303390503};
-
-               map = new google.maps.Map(document.getElementById('map'), {
-                zoom: 18,
-                center: origin
-              });
-              var clickHandler = new ClickEventHandler(map, origin);
-
-            var input = /** @type {!HTMLInputElement} */(
-                document.getElementById('pac-input'));
-
-            var types = document.getElementById('type-selector');
-            map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
-            map.controls[google.maps.ControlPosition.TOP_LEFT].push(types);
-
-            var autocomplete = new google.maps.places.Autocomplete(input);
-            autocomplete.bindTo('bounds', map);
-
-            var infowindow = new google.maps.InfoWindow();
-            var marker = new google.maps.Marker({
-              map: map,
-              anchorPoint: new google.maps.Point(0, -29)
-            });
-            google.maps.event.addListener(map, "click", function (e) {
-                //lat and lng is available in e object
-                var latLng = e.latLng;
-
-                getAlamat(latLng);
-                deleteMarkers();
-                addMarker(latLng);
-            });
-
-            autocomplete.addListener('place_changed', function() {
-              infowindow.close();
-              marker.setVisible(false);
-              var place = autocomplete.getPlace();
-              if (!place.geometry) {
-                // User entered the name of a Place that was not suggested and
-                // pressed the Enter key, or the Place Details request failed.
-                window.alert("No details available for input: '" + place.name + "'");
-                return;
-              }
-
-              // If the place has a geometry, then present it on a map.
-              if (place.geometry.viewport) {
-                map.fitBounds(place.geometry.viewport);
-              } else {
-                map.setCenter(place.geometry.location);
-                map.setZoom(17);  // Why 17? Because it looks good.
-              }
-              marker.setIcon(/** @type {google.maps.Icon} */({
-                url: place.icon,
-                size: new google.maps.Size(71, 71),
-                origin: new google.maps.Point(0, 0),
-                anchor: new google.maps.Point(17, 34),
-                scaledSize: new google.maps.Size(35, 35)
-              }));
-              marker.setPosition(place.geometry.location);
-              marker.setVisible(true);
-
-              var address = '';
-              if (place.address_components) {
-                address = [
-                  (place.address_components[0] && place.address_components[0].short_name || ''),
-                  (place.address_components[1] && place.address_components[1].short_name || ''),
-                  (place.address_components[2] && place.address_components[2].short_name || '')
-                ].join(' ');
-              }
-
-              infowindow.setContent('<div><strong>' + place.name + '</strong><br>' + address);
-              infowindow.open(map, marker);
-            });
-
-            // Sets a listener on a radio button to change the filter type on Places
-            // Autocomplete.
-            function setupClickListener(id, types) {
-              var radioButton = document.getElementById(id);
-              radioButton.addEventListener('click', function() {
-                autocomplete.setTypes(types);
-              });
-            }
-
-            setupClickListener('changetype-all', []);
-          }
-
-          function deleteMarkers() {
-              clearMarkers();
-              markers = [];
-          }
-          function setMapOnAll(map) {
-             for (var i = 0; i < markers.length; i++) {
-               markers[i].setMap(map);
-             }
-           }
-
-           // Removes the markers from the map, but keeps them in the array.
-          function clearMarkers() {
-             setMapOnAll(null);
-          }
-
-          function addMarker(location) {
-                var marker = new google.maps.Marker({
-                position: location,
-                map: map,
-                title: 'Lokasi'
-              });
-              markers.push(marker);
-              map.setCenter(marker.getPosition())
-            }
-
-
-          var ClickEventHandler = function(map, origin) {
-        this.origin = origin;
-        this.map = map;
-        this.directionsService = new google.maps.DirectionsService;
-        this.directionsDisplay = new google.maps.DirectionsRenderer;
-        this.directionsDisplay.setMap(map);
-        this.placesService = new google.maps.places.PlacesService(map);
-        this.infowindow = new google.maps.InfoWindow;
-        this.infowindowContent = document.getElementById('infowindow-content');
-        this.infowindow.setContent(this.infowindowContent);
-
-        // Listen for clicks on the map.
-        this.map.addListener('click', this.handleClick.bind(this));
-      };
-
-      ClickEventHandler.prototype.handleClick = function(event) {
-        console.log('You clicked on: ' + event.latLng);
-        // If the event has a placeId, use it.
-        if (event.placeId) {
-          console.log('You clicked on place:' + event.placeId);
-
-          // Calling e.stop() on the event prevents the default info window from
-          // showing.
-          // If you call stop here when there is no placeId you will prevent some
-          // other map click event handlers from receiving the event.
-          event.stop();
-          this.calculateAndDisplayRoute(event.placeId);
-          this.getPlaceInformation(event.placeId);
-        }
-      };
-
-      ClickEventHandler.prototype.calculateAndDisplayRoute = function(placeId) {
-        var me = this;
-        this.directionsService.route({
-          origin: this.origin,
-          destination: {placeId: placeId},
-          travelMode: 'WALKING'
-        }, function(response, status) {
-          if (status === 'OK') {
-            me.directionsDisplay.setDirections(response);
-          } else {
-            window.alert('Directions request failed due to ' + status);
-          }
-        });
-      };
-
-      ClickEventHandler.prototype.getPlaceInformation = function(placeId) {
-        var me = this;
-        this.placesService.getDetails({placeId: placeId}, function(place, status) {
-          if (status === 'OK') {
-            me.infowindow.close();
-            me.infowindow.setPosition(place.geometry.location);
-            me.infowindowContent.children['place-icon'].src = place.icon;
-            me.infowindowContent.children['place-name'].textContent = place.name;
-            me.infowindowContent.children['place-id'].textContent = place.place_id;
-            me.infowindowContent.children['place-address'].textContent =
-                place.formatted_address;
-            me.infowindow.open(me.map);
-          }
-        });
-      };
-        </script>
         <div class="content">
             <div class="container-fluid">
                 <div class="row">
@@ -408,7 +211,7 @@ box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
                                     </h4>
                                 </div>
                                 <div class="card-content">
-                                    <ul class="nav nav-pills nav-pills-warning">
+                                    <ul class="nav nav-pills nav-pills-primary">
                                         <li class="active">
                                             <a href="#dataAcara" id='data1' data-toggle="tab" aria-expanded="true" onclick="clearTemp();">Acara</a>
                                         </li>
@@ -499,14 +302,254 @@ box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
                                             </div>
 
                                           <div class="row">
+                                          <style>
+                                          /* Always set the map height explicitly to define the size of the div
+  * element that contains the map. */
+ #map {
+   height: 100%;
+ }
+ /* Optional: Makes the sample page fill the window. */
 
-                                          <input id="pac-input" class="controls" type="text"
-                                              placeholder="Enter a location">
-                                          <div id="type-selector" class="controls">
-                                            <input type="radio" name="type" id="changetype-all" checked="checked">
-                                          </div>
-                                          <div id="map"></div>
+ .controls {
+   margin-top: 10px;
+   border: 1px solid transparent;
+   border-radius: 2px 0 0 2px;
+   box-sizing: border-box;
+   -moz-box-sizing: border-box;
+   height: 32px;
+   outline: none;
+   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+ }
 
+ #pac-input {
+   background-color: #fff;
+   font-family: Roboto;
+   font-size: 15px;
+   font-weight: 300;
+   margin-left: 12px;
+   padding: 0 11px 0 13px;
+   text-overflow: ellipsis;
+   width: 300px;
+ }
+
+ #pac-input:focus {
+   border-color: #4d90fe;
+ }
+
+ .pac-container {
+   font-family: Roboto;
+ }
+
+ #type-selector {
+   color: #fff;
+   background-color: #4d90fe;
+   padding: 5px 11px 0px 11px;
+ }
+
+ #type-selector label {
+   font-family: Roboto;
+   font-size: 13px;
+   font-weight: 300;
+ }
+                                          </style>
+  <input id="pac-input" class="controls" type="text"
+      placeholder="Enter a location">
+  <div id="type-selector" class="controls">
+    <input type="radio" name="type" id="changetype-all" checked="checked">
+    <!-- <label for="changetype-all">All</label>
+
+    <input type="radio" name="type" id="changetype-establishment">
+    <label for="changetype-establishment">Establishments</label>
+
+    <input type="radio" name="type" id="changetype-address">
+    <label for="changetype-address">Addresses</label>
+
+    <input type="radio" name="type" id="changetype-geocode">
+    <label for="changetype-geocode">Geocodes</label> -->
+  </div>
+  <div id="map"></div>
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCJNf9tt4XIkzl5mAaAA0aehyVrdaS6awU&libraries=places&callback=initMap"
+      async ></script>
+  <script>
+    var markers = [];
+    var map;
+    function initMap() {
+      var origin = {lat: -6.9066217615554235, lng: 107.6347303390503};
+
+         map = new google.maps.Map(document.getElementById('map'), {
+          zoom: 18,
+          center: origin
+        });
+        var clickHandler = new ClickEventHandler(map, origin);
+
+      var input = /** @type {!HTMLInputElement} */(
+          document.getElementById('pac-input'));
+
+      var types = document.getElementById('type-selector');
+      map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
+      map.controls[google.maps.ControlPosition.TOP_LEFT].push(types);
+
+      var autocomplete = new google.maps.places.Autocomplete(input);
+      autocomplete.bindTo('bounds', map);
+
+      var infowindow = new google.maps.InfoWindow();
+      var marker = new google.maps.Marker({
+        map: map,
+        anchorPoint: new google.maps.Point(0, -29)
+      });
+      google.maps.event.addListener(map, "click", function (e) {
+          //lat and lng is available in e object
+          var latLng = e.latLng;
+
+          getAlamat(latLng);
+          deleteMarkers();
+          addMarker(latLng);
+      });
+
+      autocomplete.addListener('place_changed', function() {
+        infowindow.close();
+        marker.setVisible(false);
+        var place = autocomplete.getPlace();
+        if (!place.geometry) {
+          // User entered the name of a Place that was not suggested and
+          // pressed the Enter key, or the Place Details request failed.
+          window.alert("No details available for input: '" + place.name + "'");
+          return;
+        }
+
+        // If the place has a geometry, then present it on a map.
+        if (place.geometry.viewport) {
+          map.fitBounds(place.geometry.viewport);
+        } else {
+          map.setCenter(place.geometry.location);
+          map.setZoom(17);  // Why 17? Because it looks good.
+        }
+        marker.setIcon(/** @type {google.maps.Icon} */({
+          url: place.icon,
+          size: new google.maps.Size(71, 71),
+          origin: new google.maps.Point(0, 0),
+          anchor: new google.maps.Point(17, 34),
+          scaledSize: new google.maps.Size(35, 35)
+        }));
+        marker.setPosition(place.geometry.location);
+        marker.setVisible(true);
+
+        var address = '';
+        if (place.address_components) {
+          address = [
+            (place.address_components[0] && place.address_components[0].short_name || ''),
+            (place.address_components[1] && place.address_components[1].short_name || ''),
+            (place.address_components[2] && place.address_components[2].short_name || '')
+          ].join(' ');
+        }
+
+        infowindow.setContent('<div><strong>' + place.name + '</strong><br>' + address);
+        infowindow.open(map, marker);
+      });
+
+      // Sets a listener on a radio button to change the filter type on Places
+      // Autocomplete.
+      function setupClickListener(id, types) {
+        var radioButton = document.getElementById(id);
+        radioButton.addEventListener('click', function() {
+          autocomplete.setTypes(types);
+        });
+      }
+
+      setupClickListener('changetype-all', []);
+      setupClickListener('changetype-address', ['address']);
+      setupClickListener('changetype-establishment', ['establishment']);
+      setupClickListener('changetype-geocode', ['geocode']);
+    }
+
+    function deleteMarkers() {
+        clearMarkers();
+        markers = [];
+    }
+    function setMapOnAll(map) {
+       for (var i = 0; i < markers.length; i++) {
+         markers[i].setMap(map);
+       }
+     }
+
+     // Removes the markers from the map, but keeps them in the array.
+    function clearMarkers() {
+       setMapOnAll(null);
+    }
+
+    function addMarker(location) {
+          var marker = new google.maps.Marker({
+          position: location,
+          map: map,
+          title: 'Lokasi'
+        });
+        markers.push(marker);
+        map.setCenter(marker.getPosition())
+      }
+
+
+    var ClickEventHandler = function(map, origin) {
+  this.origin = origin;
+  this.map = map;
+  this.directionsService = new google.maps.DirectionsService;
+  this.directionsDisplay = new google.maps.DirectionsRenderer;
+  this.directionsDisplay.setMap(map);
+  this.placesService = new google.maps.places.PlacesService(map);
+  this.infowindow = new google.maps.InfoWindow;
+  this.infowindowContent = document.getElementById('infowindow-content');
+  this.infowindow.setContent(this.infowindowContent);
+
+  // Listen for clicks on the map.
+  this.map.addListener('click', this.handleClick.bind(this));
+};
+
+ClickEventHandler.prototype.handleClick = function(event) {
+  console.log('You clicked on: ' + event.latLng);
+  // If the event has a placeId, use it.
+  if (event.placeId) {
+    console.log('You clicked on place:' + event.placeId);
+
+    // Calling e.stop() on the event prevents the default info window from
+    // showing.
+    // If you call stop here when there is no placeId you will prevent some
+    // other map click event handlers from receiving the event.
+    event.stop();
+    this.calculateAndDisplayRoute(event.placeId);
+    this.getPlaceInformation(event.placeId);
+  }
+};
+
+ClickEventHandler.prototype.calculateAndDisplayRoute = function(placeId) {
+  var me = this;
+  this.directionsService.route({
+    origin: this.origin,
+    destination: {placeId: placeId},
+    travelMode: 'WALKING'
+  }, function(response, status) {
+    if (status === 'OK') {
+      me.directionsDisplay.setDirections(response);
+    } else {
+      window.alert('Directions request failed due to ' + status);
+    }
+  });
+};
+
+ClickEventHandler.prototype.getPlaceInformation = function(placeId) {
+  var me = this;
+  this.placesService.getDetails({placeId: placeId}, function(place, status) {
+    if (status === 'OK') {
+      me.infowindow.close();
+      me.infowindow.setPosition(place.geometry.location);
+      me.infowindowContent.children['place-icon'].src = place.icon;
+      me.infowindowContent.children['place-name'].textContent = place.name;
+      me.infowindowContent.children['place-id'].textContent = place.place_id;
+      me.infowindowContent.children['place-address'].textContent =
+          place.formatted_address;
+      me.infowindow.open(me.map);
+    }
+  });
+};
+  </script>
 
                                           </div>
                                           <div class="row">

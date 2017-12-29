@@ -1,7 +1,12 @@
 function saveInformasi(){
   $.ajax({
     type:'POST',
-    data : $("#formInformasi").serialize()+"&isiInformasi="+$("#summernote").code()+"&judulInformasi="+$("#judulInformasi").val(),
+    data : {
+      isiInformasi : $("#summernote").code(),
+      judulInformasi : $("#judulInformasi").val(),
+      statusPublish : $("#statusPublish").val(),
+      posisiInformasi : $('input[name=posisiInformasi]:checked').val(),
+    },
     url: url+'&tipe=saveInformasi',
       success: function(data) {
       var resp = eval('(' + data + ')');
@@ -63,10 +68,13 @@ function deleteInformasi(id){
       }
   });
 }
-
+function clearTemp(){
+  $("#data2").text("Baru");
+  $("#data2").click();
+}
 function baruInformasi(){
 
-          $("#formInformasiBaru").modal();
+          // $("#formInformasiBaru").modal();
           $("#judulInformasi").val("");
 
           $("#kiri").attr("checked",true);
@@ -83,7 +91,8 @@ function updateInformasi(id){
       success: function(data) {
       var resp = eval('(' + data + ')');
         if(resp.err==''){
-          $("#formInformasiBaru").modal();
+          $("#data2").text("Edit");
+          $("#data2").click();
           $("#judulInformasi").val(resp.content.judulInformasi);
           $("#statusPublish").val(resp.content.statusPublish);
           if(resp.content.posisi == "1"){
@@ -105,7 +114,13 @@ function updateInformasi(id){
 function saveEditInformasi(idEdit){
   $.ajax({
     type:'POST',
-    data : $("#formInformasi").serialize()+"&isiInformasi="+$("#summernote").code()+"&judulInformasi="+$("#judulInformasi").val()+"&idEdit="+idEdit,
+    data : {
+            idEdit : idEdit,
+            isiInformasi : $("#summernote").code(),
+            judulInformasi : $("#judulInformasi").val(),
+            statusPublish : $("#statusPublish").val(),
+            posisiInformasi : $('input[name=posisiInformasi]:checked').val(),
+    },
     url: url+'&tipe=saveEditInformasi',
       success: function(data) {
       var resp = eval('(' + data + ')');

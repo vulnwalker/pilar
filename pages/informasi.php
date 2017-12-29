@@ -120,7 +120,7 @@ switch($tipe){
       $tabel = "<table id='datatables' class='table table-striped table-no-bordered table-hover' cellspacing='0' width='100%' style='width:100%'>
           <thead>
               <tr>
-                  <th>Judul</th>
+                  <th style='width: 380px!important;'>Judul</th>
                   <th>Posisi</th>
                   <th>Tanggal</th>
                   <th>Penulis</th>
@@ -150,7 +150,7 @@ switch($tipe){
             <div class="container-fluid">
                 <div class="row">
                     <!-- Start Modal -->
-                    <div class="col-md-12">
+                    <!-- <div class="col-md-12">
                         <div class="card">
                             <div class="card-content">
                                 <div class="row">
@@ -162,43 +162,119 @@ switch($tipe){
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </div> -->
                     <!-- End Modal -->
 
-
-
-                    <div class="col-md-12" id='tableInformasi'>
-                        <div class="card">
-                            <div class="card-header card-header-icon" data-background-color="purple">
-                                <i class="material-icons">assignment</i>
-                            </div>
-                            <div class="card-content">
-                                <h4 class="card-title">Data informasi</h4>
-                                <div class="toolbar">
-                                    <!--        Here you can write extra buttons/actions for the toolbar              -->
+                    <div class="col-md-12">
+                            <div class="card">
+                                <div class="card-content">
+                                    <ul class="nav nav-pills nav-pills-primary">
+                                        <li class="active">
+                                            <a href="#dataInfo" id='data1' data-toggle="tab" aria-expanded="true" onclick="clearTemp();">Informasi</a>
+                                        </li>
+                                        <li>
+                                            <a href="#infoBaru" id='data2' data-toggle="tab" aria-expanded="false" onclick="baruInformasi();">Baru</a>
+                                        </li>
+                                    </ul>
+                                    <div class="tab-content">
+                                        <div class="tab-pane active" id="dataInfo">
+                                            <div class="col-md-12" id='tableInformasi'>
+                                              <div class="card">
+                                                  <div class="card-header card-header-icon" data-background-color="purple">
+                                                      <i class="material-icons">assignment</i>
+                                                  </div>
+                                                  <div class="card-content">
+                                                      <h4 class="card-title">Data Informasi</h4>
+                                                      <div class="toolbar">
+                                                          <!--        Here you can write extra buttons/actions for the toolbar              -->
+                                                      </div>
+                                                      <div class="material-datatables">
+                                                          <table id="datatables" class="table table-striped table-no-bordered table-hover" cellspacing="0" width="100%" style="width:100%">
+                                                              <thead>
+                                                                  <tr>
+                                                                      <th>Judul</th>
+                                                                      <th>Posisi</th>
+                                                                      <th>Tanggal</th>
+                                                                      <th>Penulis</th>
+                                                                      <th>Status</th>
+                                                                      <th class="disabled-sorting text-right">Actions</th>
+                                                                  </tr>
+                                                              </thead>
+                                                              <tbody>
+                                                              </tbody>
+                                                          </table>
+                                                      </div>
+                                                  </div>
+                                                  <!-- end content-->
+                                              </div>
+                                              <!--  end card  -->
+                                          </div>
+                                        </div>
+                                        <div class="tab-pane" id="infoBaru">
+                                            <div class="row">
+                                              <div class="col-lg-3 col-md-6 col-sm-3">
+                                                  <?php
+                                                    $arrayStatus = array(
+                                                              array('1','PUBLISH'),
+                                                              array('2','NON PUBLISH'),
+                                                    );
+                                                    echo cmbArray("statusPublish","1",$arrayStatus,"STATUS","class='selectpicker' data-style='btn btn-primary btn-round' title='Single Select' data-size='7'")
+                                                  ?>
+                                              </div>
+                                            </div>
+                                            <div class="row">
+                                              <div class="col-lg-12">
+                                                <form method="#" action="#">
+                                                  <div class="form-group label-floating">
+                                                      <label class="control-label">Judul Informasi</label>
+                                                      <input type="text" id='judulInformasi' class="form-control">
+                                                  </div>
+                                                </form>
+                                              </div>
+                                            </div>
+                                            <div class="row">
+                                              <div class="col-lg-3">
+                                                <div class="radio">
+                                                    <label style="padding-left: unset;">
+                                                      Posisi Informasi
+                                                    </label>
+                                                </div>
+                                              </div>
+                                            </div>
+                                            <div class="row">
+                                              <div class="col-lg-1">
+                                                <div class="radio">
+                                                    <label>
+                                                        <input type="radio" value='1' id='kiri' name="posisiInformasi" checked> Kiri
+                                                    </label>
+                                                </div>
+                                              </div>
+                                              <div class="col-lg-1">
+                                                <div class="radio">
+                                                    <label>
+                                                        <input type="radio" value='2' id='kanan' name="posisiInformasi"> Kanan
+                                                    </label>
+                                                </div>
+                                              </div>
+                                            </div>
+                                            <!-- BEGIN SUMMERNOTE -->
+                                            <div class="card">
+                                                <div class="card-body no-padding">
+                                                    <div id="summernote">
+                                                    </div>
+                                                </div><!--end .card-body -->
+                                            </div><!--end .card -->
+                                            <!-- END SUMMERNOTE -->
+                                            <div class="row">
+                                              <div class="col-lg-12">
+                                                <button type="button" class="btn btn-primary" id='buttonSubmit' onclick="saveInformasi();" data-dismiss="modal">Simpan</button>
+                                              </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div class="material-datatables">
-                                    <table id="datatables" class="table table-striped table-no-bordered table-hover" cellspacing="0" width="100%" style="width:100%">
-                                        <thead>
-                                            <tr>
-                                                <th>Judul</th>
-                                                <th>Posisi</th>
-                                                <th>Tanggal</th>
-                                                <th>Penulis</th>
-                                                <th>Status</th>
-                                                <th class="disabled-sorting text-right">Actions</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                        </tbody>
-                                    </table>
-                                </div>
                             </div>
-                            <!-- end content-->
                         </div>
-                        <!--  end card  -->
-                    </div>
-                    <!-- end col-md-12 -->
                 </div>
                 <!-- end row -->
             </div>

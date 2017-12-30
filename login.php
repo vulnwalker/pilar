@@ -9,7 +9,7 @@ if (sqlNumRow(sqlQuery("SELECT * from admin where username = '$username' and pas
 	mkdir("temp/".$username);
 	$_SESSION['username'] = $username;
 	$_SESSION['status'] = "login";
-	header("location:pages.php");
+	header("location:pages.php?page=userManagement");
 }else{
 	header("location:index.php");
 }

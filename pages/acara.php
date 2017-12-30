@@ -299,7 +299,7 @@ switch($tipe){
                                                     <div id="summernote">
                                                     </div>
                                                 </div><!--end .card-body -->
-                                            </div>
+                                            </div>z
 
                                           <div class="row">
                                           <style>

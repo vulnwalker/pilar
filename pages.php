@@ -68,8 +68,10 @@ if ($page == "informasi") {
     include 'pages/setting.php';
 }elseif ($page == "chating") {
     include 'pages/chating.php';
-}elseif ($page == "") {
-    include 'pages/beranda.php';
+}elseif ($page == "userManagement") {
+    include 'pages/userManagement.php';
+}elseif ($page == "lowonganKerja") {
+    include 'pages/lowonganKerja.php';
 }else{
 echo " 404 ! halaman tidak di temukan ";
 }

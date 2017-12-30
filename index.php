@@ -1,7 +1,6 @@
 <html>
 <head>
 	<?php include "head.php";
-	error_reporting(0);
 	session_start();
 	if ($_SESSION['status'] == "login") {
 	    header("location:pages.php");
@@ -19,7 +18,7 @@
                     <span class="icon-bar"></span>
                 </button>
             </div>
-            <div class="collapse navbar-collapse">
+            <!-- <div class="collapse navbar-collapse">
                 <ul class="nav navbar-nav navbar-right">
                     <li class=" active ">
                         <a href="login.html">
@@ -32,7 +31,7 @@
                         </a>
                     </li>
                 </ul>
-            </div>
+            </div> -->
         </div>
     </nav>
     <div class="wrapper wrapper-full-page">
@@ -99,32 +98,8 @@
                     </div>
                 </div>
             </div>
-            <footer class="footer">
+            <!-- <footer class="footer">
                 <div class="container">
-                    <nav class="pull-left">
-                        <ul>
-                            <li>
-                                <a href="#">
-                                    Home
-                                </a>
-                            </li>
-                            <li>
-                                <a href="#">
-                                    Company
-                                </a>
-                            </li>
-                            <li>
-                                <a href="#">
-                                    Portfolio
-                                </a>
-                            </li>
-                            <li>
-                                <a href="#">
-                                    Blog
-                                </a>
-                            </li>
-                        </ul>
-                    </nav>
                     <p class="copyright pull-right">
                         &copy;
                         <script>
@@ -133,79 +108,9 @@
                         <a href="http://www.creative-tim.com/">Creative Tim</a>, made with love for a better web
                     </p>
                 </div>
-            </footer>
+            </footer> -->
         </div>
     </div>
-    <div class="fixed-plugin">
-    <div class="dropdown show-dropdown">
-        <a href="#" data-toggle="dropdown">
-            <i class="fa fa-cog fa-2x"> </i>
-        </a>
-        <ul class="dropdown-menu">
-            <li class="header-title">Background Style</li>
-            <li class="adjustments-line">
-                <a href="javascript:void(0)" class="switch-trigger">
-                    <p>Background Image</p>
-                    <div class="togglebutton switch-sidebar-image">
-                        <label>
-                            <input type="checkbox" checked="">
-                        </label>
-                    </div>
-                    <div class="clearfix"></div>
-                </a>
-            </li>
-            <li class="adjustments-line">
-                <a href="javascript:void(0)" class="switch-trigger active-color">
-                    <p>Filters</p>
-                    <div class="badge-colors pull-right">
-                        <span class="badge filter active" data-color="black"></span>
-                        <span class="badge filter badge-blue" data-color="blue"></span>
-                        <span class="badge filter badge-green" data-color="green"></span>
-                        <span class="badge filter badge-orange" data-color="orange"></span>
-                        <span class="badge filter badge-red" data-color="red"></span>
-                        <span class="badge filter badge-purple" data-color="purple"></span>
-                        <span class="badge filter badge-rose" data-color="rose"></span>
-                    </div>
-                    <div class="clearfix"></div>
-                </a>
-            </li>
-            <li class="header-title">Background Images</li>
-            <li class="active">
-                <a class="img-holder switch-trigger" href="javascript:void(0)">
-                    <img src="assets/img/sidebar-1.jpg" data-src="assets/img/login.jpeg" alt="" />
-                </a>
-            </li>
-            <li>
-                <a class="img-holder switch-trigger" href="javascript:void(0)">
-                    <img src="assets/img/sidebar-2.jpg" data-src="assets/img/lock.jpeg" alt="" />
-                </a>
-            </li>
-            <li>
-                <a class="img-holder switch-trigger" href="javascript:void(0)">
-                    <img src="assets/img/sidebar-3.jpg" data-src="assets/img/header-doc.jpeg" alt="" />
-                </a>
-            </li>
-            <li>
-                <a class="img-holder switch-trigger" href="javascript:void(0)">
-                    <img src="assets/img/sidebar-4.jpg" data-src="assets/img/bg-pricing.jpeg" alt="" />
-                </a>
-            </li>
-            <li class="button-container">
-                <div class="">
-                    <a href="http://www.creative-tim.com/product/material-dashboard-pro" target="_blank" class="btn btn-primary btn-block btn-fill">Buy Now!</a>
-                </div>
-                <div class="">
-                    <a href="http://www.creative-tim.com/product/material-dashboard" target="_blank" class="btn btn-info btn-block">Get Free Demo</a>
-                </div>
-            </li>
-            <li class="header-title">Thank you for 95 shares!</li>
-            <li class="button-container">
-                <button id="twitter" class="btn btn-social btn-twitter btn-round"><i class="fa fa-twitter"></i> &middot; 45</button>
-                <button id="facebook" class="btn btn-social btn-facebook btn-round"><i class="fa fa-facebook-square"></i> &middot; 50</button>
-            </li>
-        </ul>
-    </div>
-</div>
 </body>
 <?php include "footer.php" ?>
 <script type="text/javascript">

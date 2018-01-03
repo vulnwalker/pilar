@@ -8,24 +8,16 @@ function saveLowongan(){
       var resp = eval('(' + data + ')');
       $("#LoadingImage").hide();
         if(resp.err==''){
-         refreshList();
+           suksesAlert("Data Tersimpan");
         }else{
-          // alert(resp.err);
-          swal({
-            position: 'top-right',
-            type: 'warning',
-            title: (resp.err),
-            showConfirmButton: true,
-            timer: 5000
-          });
-
+          errorAlert(resp.err);
         }
       }
   });
 }
 
 function refreshList(){
-    window.location.reload();
+    window.location = "pages.php?page=lowonganKerja";
 }
 
 function loadTable(){
@@ -59,19 +51,31 @@ function loadTable(){
 
 
 function deleteLowongan(id){
-  $.ajax({
-    type:'POST',
-    data : {id : id},
-    url: url+'&tipe=deleteLowongan',
-      success: function(data) {
-      var resp = eval('(' + data + ')');
-        if(resp.err==''){
-          refreshList();
-        }else{
-          alert(resp.err);
-        }
-      }
-  });
+  swal({
+      title: "Yakin Hapus Data",
+      type: "warning",
+      showCancelButton: true,
+      confirmButtonColor: '#DD6B55',
+      confirmButtonText: 'Ya',
+      cancelButtonText: "Tidak"
+   }).then(
+         function () {
+           $.ajax({
+             type:'POST',
+             data : {id:id},
+             url: url+'&tipe=deleteLowongan',
+               success: function(data) {
+               var resp = eval('(' + data + ')');
+                 if(resp.err==''){
+                   suksesAlert("Data Terhapus");
+                 }else{
+                   errorAlert(resp.err);
+                 }
+               }
+           });
+         },
+         function () { return false; });
+
 }
 function clearTemp(){
   $("#data2").text("Baru");
@@ -79,76 +83,43 @@ function clearTemp(){
 }
 function baruLowongan(){
 
-          // $("#divForLowonganname").attr("class","form-group label-floating ");
-          // $("#divForPassword").attr("class","form-group label-floating ");
-          // $("#divForEmail").attr("class","form-group label-floating ");
-          // $("#divForNama").attr("class","form-group label-floating ");
-          // $("#divForTelepon").attr("class","form-group label-floating ");
-          // $("#divForAlamat").attr("class","form-group label-floating ");
-          // $("#divForInstansi").attr("class","form-group label-floating ");
-          // $("#usernameLowongan").val("");
-          // $("#passwordLowongan").val("");
-          // $("#emailLowongan").val("");
-          // $("#namaLowongan").val("");
-          // $("#teleponLowongan").val("");
-          // $("#alamatLowongan").text("");
-          // $("#instansiLowongan").val("");
-          // $("#statusLowongan").val("1");
-          // $("#buttonSubmit").attr("onclick","saveLowongan()");
-
-          $.ajax({
-            type:'POST',
-            url: url+'&tipe=editTab',
-              success: function(data) {
-              var resp = eval('(' + data + ')');
-                if(resp.err==''){
-                  $("#data2").text("Baru");
-                  $("#lowonganBaru").html(resp.content);
-                  $("#summernote").summernote();
-                  $("#posisiLowongan").attr("class","form-control");
-                  // $("#posisiLowongan").attr("data-style","btn btn-primary btn-round");
-                  // $("#posisiLowongan").attr("title","Single Select' data-size='7'");
-                  // $("#posisiLowongan").attr("class='selectpicker' data-style='btn btn-primary btn-round' title='Single Select' data-size='7'");
-                }else{
-                  alert(resp.err);
-                }
-              }
-          });
+          $("#divForLowonganname").attr("class","form-group label-floating ");
+          $("#divForPassword").attr("class","form-group label-floating ");
+          $("#divForEmail").attr("class","form-group label-floating ");
+          $("#divForNama").attr("class","form-group label-floating ");
+          $("#divForTelepon").attr("class","form-group label-floating ");
+          $("#divForAlamat").attr("class","form-group label-floating ");
+          $("#divForInstansi").attr("class","form-group label-floating ");
+          $("#usernameLowongan").val("");
+          $("#passwordLowongan").val("");
+          $("#emailLowongan").val("");
+          $("#namaLowongan").val("");
+          $("#teleponLowongan").val("");
+          $("#alamatLowongan").text("");
+          $("#instansiLowongan").val("");
+          $("#statusLowongan").val("1");
+          $("#buttonSubmit").attr("onclick","saveLowongan()");
 
 }
 function updateLowongan(id){
 //  $("#LoadingImage").attr('style','display:block');
-  $.ajax({
-    type:'POST',
-    data : {id : id},
-    url: url+'&tipe=updateLowongan',
-      success: function(data) {
-      var resp = eval('(' + data + ')');
-      //  $("#LoadingImage").hide();
-        if(resp.err==''){
-          $("#data2").text("Edit");
-          $("#data2").click();
-          // $("#divForLowonganname").attr("class","form-group label-floating is-focused");
-          // $("#divForPassword").attr("class","form-group label-floating is-focused");
-          // $("#divForEmail").attr("class","form-group label-floating is-focused");
-          // $("#divForNama").attr("class","form-group label-floating is-focused");
-          // $("#divForTelepon").attr("class","form-group label-floating is-focused");
-          // $("#divForAlamat").attr("class","form-group label-floating is-focused");
-          // $("#divForInstansi").attr("class","form-group label-floating is-focused");
-          $("#posisiLowongan").html(resp.content.posisiLowongan);
-          $("#divPendidikanLowongan").html(resp.content.pendidikanLowongan);
-          // $("#emailLowongan").val(resp.content.emailLowongan);
-          // $("#namaLowongan").val(resp.content.namaLowongan);
-          // $("#teleponLowongan").val(resp.content.teleponLowongan);
-          // $("#alamatLowongan").text(resp.content.alamatLowongan);
-          // $("#instansiLowongan").val(resp.content.instansiLowongan);
-          // $("#statusLowongan").html(resp.content.statusLowongan);
-          $("#buttonSubmit").attr("onclick","saveEditLowongan("+id+")");
-        }else{
-          alert(resp.err);
-        }
-      }
-  });
+  // $.ajax({
+  //   type:'POST',
+  //   data : {id : id},
+  //   url: url+'&tipe=updateLowongan',
+  //     success: function(data) {
+  //     var resp = eval('(' + data + ')');
+  //     //  $("#LoadingImage").hide();
+  //       if(resp.err==''){
+  //
+  //         // $("#divPendidikanLowongan").html(resp.content.pendidikanLowongan);
+  //         $("#buttonSubmit").attr("onclick","saveEditLowongan("+id+")");
+  //       }else{
+  //         alert(resp.err);
+  //       }
+  //     }
+  // });
+  window.location = "pages.php?page=lowonganKerja&edit="+id;
 }
 
 
@@ -162,16 +133,9 @@ function saveEditLowongan(idEdit){
       var resp = eval('(' + data + ')');
         $("#LoadingImage").hide();
         if(resp.err==''){
-          refreshList();
+          suksesAlert("Data Tersimpan");
         }else{
-          swal({
-            position: 'top-right',
-            type: 'warning',
-            title: (resp.err),
-            showConfirmButton: true,
-            timer: 5000
-          });
-
+          errorAlert(resp.err);
         }
       }
   });

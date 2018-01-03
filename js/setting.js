@@ -14,12 +14,23 @@ function saveSetting(){
               informasiPosisi : $("#informasiPosisi").val(),
               produkPosisi : $("#produkPosisi").val(),
               acaraPosisi : $("#acaraPosisi").val(),
+              namaPerusahaan : $("#namaPerusahaan").val(),
+              alamatPerusahaan : $("#alamatPerusahaan").val(),
+              emailPerusahaan : $("#emailPerusahaan").val(),
+              teleponPerusahaan : $("#teleponPerusahaan").val(),
+              facebookPerusahaan : $("#facebookPerusahaan").val(),
+              twiterPerusahaan : $("#twiterPerusahaan").val(),
+              instagramPerusahaan : $("#instagramPerusahaan").val(),
+              linePerusahaan : $("#linePerusahaan").val(),
+              waPerusahaan : $("#waPerusahaan").val(),
+              bbmPerusahaan : $("#bbmPerusahaan").val(),
+              tentang : $("#tentang").val(),
             },
     url: url+'&tipe=saveSetting',
       success: function(data) {
       var resp = eval('(' + data + ')');
         if(resp.err==''){
-          refreshList();
+          suksesAlert("Data Tersimpan");
         }else{
           alert(resp.err);
         }

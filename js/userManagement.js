@@ -8,24 +8,16 @@ function saveUser(){
       var resp = eval('(' + data + ')');
       $("#LoadingImage").hide();
         if(resp.err==''){
-          refreshList();
+          suksesAlert("Data Tersimpan");
         }else{
-          // alert(resp.err);
-          swal({
-            position: 'top-right',
-            type: 'warning',
-            title: (resp.err),
-            showConfirmButton: true,
-            timer: 5000
-          });
-
+          errorAlert(resp.err);
         }
       }
   });
 }
 
 function refreshList(){
-    window.location.reload();
+    window.location = "pages.php?page=userManagement";
 }
 
 function loadTable(){
@@ -59,19 +51,30 @@ function loadTable(){
 
 
 function deleteUser(id){
-  $.ajax({
-    type:'POST',
-    data : {id : id},
-    url: url+'&tipe=deleteUser',
-      success: function(data) {
-      var resp = eval('(' + data + ')');
-        if(resp.err==''){
-          refreshList();
-        }else{
-          alert(resp.err);
-        }
-      }
-  });
+  swal({
+      title: "Yakin Hapus Data",
+      type: "warning",
+      showCancelButton: true,
+      confirmButtonColor: '#DD6B55',
+      confirmButtonText: 'Ya',
+      cancelButtonText: "Tidak"
+   }).then(
+         function () {
+           $.ajax({
+             type:'POST',
+             data : {id:id},
+             url: url+'&tipe=deleteUser',
+               success: function(data) {
+               var resp = eval('(' + data + ')');
+                 if(resp.err==''){
+                   suksesAlert("Data Terhapus");
+                 }else{
+                   errorAlert(resp.err);
+                 }
+               }
+           });
+         },
+         function () { return false; });
 }
 function clearTemp(){
   $("#data2").text("Baru");
@@ -98,38 +101,40 @@ function baruUser(){
 
 }
 function updateUser(id){
-  $("#LoadingImage").attr('style','display:block');
-  $.ajax({
-    type:'POST',
-    data : {id : id},
-    url: url+'&tipe=updateUser',
-      success: function(data) {
-      var resp = eval('(' + data + ')');
-        $("#LoadingImage").hide();
-        if(resp.err==''){
-          $("#data2").text("Edit");
-          $("#data2").click();
-          $("#divForUsername").attr("class","form-group label-floating is-focused");
-          $("#divForPassword").attr("class","form-group label-floating is-focused");
-          $("#divForEmail").attr("class","form-group label-floating is-focused");
-          $("#divForNama").attr("class","form-group label-floating is-focused");
-          $("#divForTelepon").attr("class","form-group label-floating is-focused");
-          $("#divForAlamat").attr("class","form-group label-floating is-focused");
-          $("#divForInstansi").attr("class","form-group label-floating is-focused");
-          $("#usernameUser").val(resp.content.usernameUser);
-          $("#passwordUser").val(resp.content.passwordUser);
-          $("#emailUser").val(resp.content.emailUser);
-          $("#namaUser").val(resp.content.namaUser);
-          $("#teleponUser").val(resp.content.teleponUser);
-          $("#alamatUser").text(resp.content.alamatUser);
-          $("#instansiUser").val(resp.content.instansiUser);
-          $("#statusUser").html(resp.content.statusUser);
-          $("#buttonSubmit").attr("onclick","saveEditUser("+id+")");
-        }else{
-          alert(resp.err);
-        }
-      }
-  });
+  // $("#LoadingImage").attr('style','display:block');
+  // $.ajax({
+  //   type:'POST',
+  //   data : {id : id},
+  //   url: url+'&tipe=updateUser',
+  //     success: function(data) {
+  //     var resp = eval('(' + data + ')');
+  //       $("#LoadingImage").hide();
+  //       if(resp.err==''){
+  //         $("#data2").text("Edit");
+  //         $("#data2").click();
+  //         $("#divForUsername").attr("class","form-group label-floating is-focused");
+  //         $("#divForPassword").attr("class","form-group label-floating is-focused");
+  //         $("#divForEmail").attr("class","form-group label-floating is-focused");
+  //         $("#divForNama").attr("class","form-group label-floating is-focused");
+  //         $("#divForTelepon").attr("class","form-group label-floating is-focused");
+  //         $("#divForAlamat").attr("class","form-group label-floating is-focused");
+  //         $("#divForInstansi").attr("class","form-group label-floating is-focused");
+  //         $("#usernameUser").val(resp.content.usernameUser);
+  //         $("#passwordUser").val(resp.content.passwordUser);
+  //         $("#emailUser").val(resp.content.emailUser);
+  //         $("#namaUser").val(resp.content.namaUser);
+  //         $("#teleponUser").val(resp.content.teleponUser);
+  //         $("#alamatUser").text(resp.content.alamatUser);
+  //         $("#instansiUser").val(resp.content.instansiUser);
+  //         $("#statusUser").html(resp.content.statusUser);
+  //         $("#buttonSubmit").attr("onclick","saveEditUser("+id+")");
+  //       }else{
+  //         alert(resp.err);
+  //       }
+  //     }
+  // });
+  window.location = "pages.php?page=userManagement&edit="+id;
+
 }
 
 
@@ -143,16 +148,9 @@ function saveEditUser(idEdit){
       var resp = eval('(' + data + ')');
         $("#LoadingImage").hide();
         if(resp.err==''){
-          refreshList();
+          suksesAlert("Data Tersimpan");
         }else{
-          swal({
-            position: 'top-right',
-            type: 'warning',
-            title: (resp.err),
-            showConfirmButton: true,
-            timer: 5000
-          });
-
+          errorAlert(resp.err);
         }
       }
   });

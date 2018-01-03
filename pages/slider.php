@@ -133,9 +133,9 @@ switch($tipe){
         var url = "http://"+window.location.hostname+"/api.php?page=slider";
 
         </script>
-        <script src="js/dropzone/dropzone.js"></script>
+        <!-- <script src="js/dropzone/dropzone.js"></script> -->
         <script src="js/slider.js"></script>
-        <link rel="stylesheet" href="js/dropzone/dropzone.css">
+        <!-- <link rel="stylesheet" href="js/dropzone/dropzone.css"> -->
 
 
         <div class="content">
@@ -270,7 +270,7 @@ switch($tipe){
             </div>
         </div>
 <?php
-    clearDirectory("temp");
+    //clearDirectory("temp/");
      break;
      }
 

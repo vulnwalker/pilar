@@ -5,7 +5,6 @@ function saveAcara(){
               namaAcara : $("#namaAcara").val(),
               tanggalAcara : $("#tanggalAcara").val(),
               waktuAcara : $("#waktuAcara").val(),
-              kapasitasAcara : $("#kapasitasAcara").val(),
               lokasi : $("#lokasi").val(),
               deskripsiAcara : $("#summernote").code(),
               kordinatX : $("#kordinatX").val(),
@@ -15,23 +14,21 @@ function saveAcara(){
       success: function(data) {
       var resp = eval('(' + data + ')');
         if(resp.err==''){
-          refreshList();
+          suksesAlert("Data Tersimpan");
         }else{
-          alert(resp.err);
+          errorAlert(resp.err);
         }
       }
   });
 }
 
 function refreshList(){
-    window.location.reload();
+    window.location = "pages.php?page=acara";
 }
 
 function loadTable(){
-
   $.ajax({
     type:'POST',
-
     url: url+'&tipe=loadTable',
       success: function(data) {
       var resp = eval('(' + data + ')');
@@ -48,7 +45,36 @@ function loadTable(){
                   search: "_INPUT_",
                   searchPlaceholder: "Search records",
               }
+          });
+        }else{
+          alert(resp.err);
+        }
+      }
+  });
+}
 
+function loadKonfirmasi(idAcara){
+  $.ajax({
+    type:'POST',
+    data: {
+            idAcara : idAcara
+          },
+    url: url+'&tipe=loadKonfirmasi',
+      success: function(data) {
+      var resp = eval('(' + data + ')');
+        if(resp.err==''){
+          $("#datatables").html(resp.content.tabelAcara);
+          $('#datatables').DataTable({
+              "pagingType": "full_numbers",
+              "lengthMenu": [
+                  [10, 25, 50, -1],
+                  [10, 25, 50, "All"]
+              ],
+              responsive: true,
+              language: {
+                  search: "_INPUT_",
+                  searchPlaceholder: "Search records",
+              }
           });
         }else{
           alert(resp.err);
@@ -58,20 +84,32 @@ function loadTable(){
 }
 
 
+
 function deleteAcara(id){
-  $.ajax({
-    type:'POST',
-    data : {id : id},
-    url: url+'&tipe=deleteAcara',
-      success: function(data) {
-      var resp = eval('(' + data + ')');
-        if(resp.err==''){
-          refreshList();
-        }else{
-          alert(resp.err);
-        }
-      }
-  });
+  swal({
+      title: "Yakin Hapus Data",
+      type: "warning",
+      showCancelButton: true,
+      confirmButtonColor: '#DD6B55',
+      confirmButtonText: 'Ya',
+      cancelButtonText: "Tidak"
+   }).then(
+         function () {
+           $.ajax({
+             type:'POST',
+             data : {id:id},
+             url: url+'&tipe=deleteAcara',
+               success: function(data) {
+               var resp = eval('(' + data + ')');
+                 if(resp.err==''){
+                   suksesAlert("Data Terhapus");
+                 }else{
+                   errorAlert(resp.err);
+                 }
+               }
+           });
+         },
+         function () { return false; });
 }
 
 function baruAcara(){
@@ -83,31 +121,62 @@ function baruAcara(){
 
 }
 function updateAcara(id){
+  // $.ajax({
+  //   type:'POST',
+  //   data : {id : id},
+  //   url: url+'&tipe=updateAcara',
+  //     success: function(data) {
+  //     var resp = eval('(' + data + ')');
+  //       if(resp.err==''){
+  //           $("#data2").text("Edit");
+  //           $("#data2").click();
+  //           $("#submitAcara").attr("onclick","saveEditAcara("+id+")");
+  //           $("#namaAcara").val(resp.content.namaAcara);
+  //           $("#tanggalAcara").val(resp.content.tanggalAcara);
+  //           $("#waktuAcara").val(resp.content.waktuAcara);
+  //           //$("#lokasi").val(resp.content.lokasi);
+  //           $("#kapasitasAcara").val(resp.content.kapasitasAcara);
+  //           $("#summernote").code(resp.content.deskripsiAcara);
+  //           getAlamat(resp.content.kordinatLocation);
+  //           deleteMarkers();
+  //           var lastLocation = new google.maps.LatLng(resp.content.lat,resp.content.lng);
+  //           addMarker(lastLocation);
+  //       }else{
+  //         alert(resp.err);
+  //       }
+  //     }
+  // });
+  // getAlamat(<?php echo $getDataEdit['koordinat'] ?>);
+  // deleteMarkers();
+  // var lastLocation = new google.maps.LatLng(<?php echo $explodeKoordinat[0] ?>,<?php echo $explodeKoordinat[1] ?>);
+  // addMarker(lastLocation);
+window.location = "pages.php?page=acara&action=edit&id="+id;
+}
+function confirmAcara(id){
   $.ajax({
     type:'POST',
     data : {id : id},
-    url: url+'&tipe=updateAcara',
+    url: url+'&tipe=confirmAcara',
       success: function(data) {
       var resp = eval('(' + data + ')');
         if(resp.err==''){
-            $("#data2").text("Edit");
-            $("#data2").click();
-            $("#submitAcara").attr("onclick","saveEditAcara("+id+")");
-            $("#namaAcara").val(resp.content.namaAcara);
-            $("#tanggalAcara").val(resp.content.tanggalAcara);
-            $("#waktuAcara").val(resp.content.waktuAcara);
-            //$("#lokasi").val(resp.content.lokasi);
-            $("#kapasitasAcara").val(resp.content.kapasitasAcara);
-            $("#summernote").code(resp.content.deskripsiAcara);
-            getAlamat(resp.content.kordinatLocation);
-            deleteMarkers();
-            var lastLocation = new google.maps.LatLng(resp.content.lat,resp.content.lng);
-            addMarker(lastLocation);
+            $("#formKonfirmasiAcara").modal();
+            if(document.getElementById('statusConfirmasi')){
+            }else{
+                $("#spanComboStatus").html(resp.content.comboStatus);
+                $("#statusConfirmasi").attr('class','selectpicker');
+                $("#statusConfirmasi").selectpicker('refresh');
+            }
+            $("#jumlahOrang").val(resp.content.jumlahOrang);
+            $("#buttonSubmitKonfirmasi").attr('onclick',"saveKonfirmasi("+id+")");
         }else{
           alert(resp.err);
         }
       }
   });
+}
+function listKonfirmasi(id){
+  window.location = "pages.php?page=acara&action=confirm&idAcara="+id;
 }
 
 
@@ -118,7 +187,6 @@ function saveEditAcara(idEdit){
               namaAcara : $("#namaAcara").val(),
               tanggalAcara : $("#tanggalAcara").val(),
               waktuAcara : $("#waktuAcara").val(),
-              kapasitasAcara : $("#kapasitasAcara").val(),
               lokasi : $("#lokasi").val(),
               deskripsiAcara : $("#summernote").code(),
               kordinatX : $("#kordinatX").val(),
@@ -129,9 +197,28 @@ function saveEditAcara(idEdit){
       success: function(data) {
       var resp = eval('(' + data + ')');
         if(resp.err==''){
-          refreshList();
+         suksesAlert("Data Tersimpan");
         }else{
-          alert(resp.err);
+          errorAlert(resp.err);
+        }
+      }
+  });
+}
+function saveKonfirmasi(id){
+  $.ajax({
+    type:'POST',
+    data : {
+              statusConfirmasi : $("#statusConfirmasi").val(),
+              jumlahOrang : $("#jumlahOrang").val(),
+              id : id,
+            },
+    url: url+'&tipe=saveKonfirmasi',
+      success: function(data) {
+      var resp = eval('(' + data + ')');
+        if(resp.err==''){
+          suksesAlert("Data Tersimpan");
+        }else{
+          errorAlert(resp.err);
         }
       }
   });

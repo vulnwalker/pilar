@@ -11,16 +11,16 @@ function saveProduk(){
       success: function(data) {
       var resp = eval('(' + data + ')');
         if(resp.err==''){
-         refreshList();
+         suksesAlert("Data Tersimpan");
         }else{
-          alert(resp.err);
+          errorAlert(resp.err);
         }
       }
   });
 }
 
 function refreshList(){
-    window.location.reload();
+    window.location= 'pages.php?page=produk';
 }
 
 function loadTable(){
@@ -63,19 +63,30 @@ function loadTable(){
 
 
 function deleteProduk(id){
-  $.ajax({
-    type:'POST',
-    data : {id : id},
-    url: url+'&tipe=deleteProduk',
-      success: function(data) {
-      var resp = eval('(' + data + ')');
-        if(resp.err==''){
-          refreshList();
-        }else{
-          alert(resp.err);
-        }
-      }
-  });
+  swal({
+      title: "Yakin Hapus Data",
+      type: "warning",
+      showCancelButton: true,
+      confirmButtonColor: '#DD6B55',
+      confirmButtonText: 'Ya',
+      cancelButtonText: "Tidak"
+   }).then(
+         function () {
+           $.ajax({
+             type:'POST',
+             data : {id:id},
+             url: url+'&tipe=deleteProduk',
+               success: function(data) {
+               var resp = eval('(' + data + ')');
+                 if(resp.err==''){
+                   suksesAlert("Data Terhapus");
+                 }else{
+                   errorAlert(resp.err);
+                 }
+               }
+           });
+         },
+         function () { return false; });
 }
 
 function removeTemp(id){
@@ -105,8 +116,19 @@ function baruProduk(){
                       addRemoveLinks: true,
                       init: function() {
                           this.on("complete", function(file) {
-                              $(".dz-remove").html("<div><span class='fa fa-trash text-danger' style='font-size: 1.5em;cursor:pointer;' onclick=removeTemp('"+file.name+"');>REMOVE</span></div>");
+                              $(".dz-remove").html("<div><span class='fa fa-trash text-danger' style='font-size: 1.5em;cursor:pointer;' >REMOVE</span></div>");
+                              // $(".dz-details").attr("onclick","deskripsiScreenShot('"+file.name+"')");
+                              $(".dz-details").attr("style","cursor:pointer;");
                           });
+                          this.on("thumbnail", function(file) {
+                            console.log(file); // will send to console all available props
+                            file.previewElement.addEventListener("click", function() {
+                               deskripsiScreenShot(file.name);
+                            });
+                        });
+                          this.on("removedfile", function(file) {
+                               removeTemp(file.name);
+                        });
                       }
 
                   });
@@ -118,6 +140,43 @@ function baruProduk(){
                   $("#tempImageProduk").attr("src","assets/img/image_placeholder.jpg");
                   $("#gambarProduk").val("");
 
+}
+function deskripsiScreenShot(namaFile){
+  $.ajax({
+    type:'POST',
+    data : {namaFile : namaFile},
+    url: url+'&tipe=deskripsiScreenShot',
+      success: function(data) {
+      var resp = eval('(' + data + ')');
+        if(resp.err==''){
+          $("#descSreenShot").text("");
+          $("#tempScreenShot").attr('src',resp.content.srcImage);
+          $("#descSreenShot").val(resp.content.descScreenShot);
+          $("#divForDesc").attr("class","form-group label-floating is-focused");
+          $("#buttonSubmitScreenShot").attr("onclick","saveDescSreenshot('"+namaFile+"')");
+          $("#formDeskripsiScreenShot").modal();
+        }else{
+          alert(resp.err);
+        }
+      }
+  });
+}
+function saveDescSreenshot(namaFile){
+  $.ajax({
+    type:'POST',
+    data : {
+              namaFile : namaFile,
+              descSreenShot : $("#descSreenShot").val()
+            },
+    url: url+'&tipe=saveDescSreenshot',
+      success: function(data) {
+      var resp = eval('(' + data + ')');
+        if(resp.err==''){
+        }else{
+          alert(resp.err);
+        }
+      }
+  });
 }
 function clearTemp(){
   $("#data2").text("Baru");
@@ -131,40 +190,44 @@ function updateProduk(id){
       success: function(data) {
       var resp = eval('(' + data + ')');
         if(resp.err==''){
-          $("#data2").text("Edit");
-          $("#data2").click();
-          $("#namaProduk").val(resp.content.namaProduk);
-          $("#statusPublish").val(resp.content.statusPublish);
-          $("#summernote").code(resp.content.deskripsi);
-          $("#buttonSubmit").attr("onclick","saveEditProduk("+id+")");
-          $("#tempImageProduk").attr("src",resp.content.baseOfFile);
-          $("#gambarProduk").val(resp.content.baseOfFile);
-          Dropzone.autoDiscover = false;
-            var myDropzone = new Dropzone("#dropzone", {
-                url: "upload.php",
-                maxFileSize: 50,
-                acceptedFiles: ".jpeg,.jpg,.png,.gif",
-                addRemoveLinks: true,
-                init: function() {
-                    this.on("complete", function(file) {
-                        $(".dz-remove").html("<div><span class='fa fa-trash text-danger' style='font-size: 1.5em;cursor:pointer;' onclick=removeTemp('"+file.name+"');>REMOVE</span></div>");
-                    });
-                }
-
-            });
-          $("#dropzone").attr('class','dropzone dz-clickable');
-          var existingFiles = JSON.parse(resp.content.screenShot);
-          for (i = 0; i < existingFiles.length; i++) {
-              myDropzone.emit("addedfile", existingFiles[i]);
-              myDropzone.emit("thumbnail", existingFiles[i], existingFiles[i].imageLocation);
-              myDropzone.emit("complete", existingFiles[i]);
-          }
+          // $("#data2").text("Edit");
+          // $("#data2").click();
+          // $("#namaProduk").val(resp.content.namaProduk);
+          // $("#statusPublish").val(resp.content.statusPublish);
+          // $("#summernote").code(resp.content.deskripsi);
+          // $("#buttonSubmit").attr("onclick","saveEditProduk("+id+")");
+          // $("#tempImageProduk").attr("src",resp.content.baseOfFile);
+          // $("#gambarProduk").val(resp.content.baseOfFile);
+          // Dropzone.autoDiscover = false;
+          //   var myDropzone = new Dropzone("#dropzone", {
+          //       url: "upload.php",
+          //       maxFileSize: 50,
+          //       acceptedFiles: ".jpeg,.jpg,.png,.gif",
+          //       addRemoveLinks: true,
+          //       init: function() {
+          //           this.on("complete", function(file) {
+          //               $(".dz-remove").html("<div><span class='fa fa-trash text-danger' style='font-size: 1.5em;cursor:pointer;' onclick=removeTemp('"+file.name+"');>REMOVE</span></div>");
+          //
+          //           });
+          //       }
+          //
+          //   });
+          // $("#dropzone").attr('class','dropzone dz-clickable');
+          // var existingFiles = JSON.parse(resp.content.screenShot);
+          // for (i = 0; i < existingFiles.length; i++) {
+          //     myDropzone.emit("addedfile", existingFiles[i]);
+          //     myDropzone.emit("thumbnail", existingFiles[i], existingFiles[i].imageLocation);
+          //     myDropzone.emit("complete", existingFiles[i]);
+          // }
+          //
           // $("#isiProduk").val(resp.content.isiProduk);
+            window.location = "pages.php?page=produk&edit="+id;
         }else{
           alert(resp.err);
         }
       }
   });
+
 }
 
 
@@ -182,9 +245,9 @@ function saveEditProduk(idEdit){
       success: function(data) {
       var resp = eval('(' + data + ')');
         if(resp.err==''){
-          refreshList();
+         suksesAlert("Data Tersimpan");
         }else{
-          alert(resp.err);
+          errorAlert(resp.err);
         }
       }
   });

@@ -1,14 +1,12 @@
-function saveSlider(){
+function saveTeam(){
+  $("#LoadingImage").attr('style','display:block');
   $.ajax({
     type:'POST',
-    data : {
-        statusPublish : $("#statusPublish").val(),
-        gambarSlider : $("#gambarSlider").val(),
-        namaSlider : $("#namaSlider").val(),
-    },
-    url: url+'&tipe=saveSlider',
+    data : $("#formTeam").serialize(),
+    url: url+'&tipe=saveTeam',
       success: function(data) {
       var resp = eval('(' + data + ')');
+      $("#LoadingImage").hide();
         if(resp.err==''){
           suksesAlert("Data Tersimpan");
         }else{
@@ -19,7 +17,7 @@ function saveSlider(){
 }
 
 function refreshList(){
-    window.location.reload();
+    window.location = "pages.php?page=team";
 }
 
 function loadTable(){
@@ -30,7 +28,7 @@ function loadTable(){
       success: function(data) {
       var resp = eval('(' + data + ')');
         if(resp.err==''){
-          $("#datatables").html(resp.content.tabelSlider);
+          $("#datatables").html(resp.content.tabelTeam);
           $('#datatables').DataTable({
               "pagingType": "full_numbers",
               "lengthMenu": [
@@ -52,7 +50,7 @@ function loadTable(){
 }
 
 
-function deleteSlider(id){
+function deleteTeam(id){
   swal({
       title: "Yakin Hapus Data",
       type: "warning",
@@ -65,7 +63,7 @@ function deleteSlider(id){
            $.ajax({
              type:'POST',
              data : {id:id},
-             url: url+'&tipe=deleteSlider',
+             url: url+'&tipe=deleteTeam',
                success: function(data) {
                var resp = eval('(' + data + ')');
                  if(resp.err==''){
@@ -78,47 +76,45 @@ function deleteSlider(id){
          },
          function () { return false; });
 }
+function clearTemp(){
+  $("#data2").text("Baru");
+  $("#data2").click();
+}
+function baruTeam(){
 
-function baruSlider(){
-
-          $("#formSliderBaru").modal()
-          $("#buttonSubmit").attr("onclick","saveSlider()");
+          $("#divForTeamname").attr("class","form-group label-floating ");
+          $("#divForPassword").attr("class","form-group label-floating ");
+          $("#divForEmail").attr("class","form-group label-floating ");
+          $("#divForNama").attr("class","form-group label-floating ");
+          $("#divForTelepon").attr("class","form-group label-floating ");
+          $("#divForAlamat").attr("class","form-group label-floating ");
+          $("#divForInstansi").attr("class","form-group label-floating ");
+          $("#usernameTeam").val("");
+          $("#passwordTeam").val("");
+          $("#emailTeam").val("");
+          $("#namaTeam").val("");
+          $("#teleponTeam").val("");
+          $("#alamatTeam").text("");
+          $("#instansiTeam").val("");
+          $("#statusTeam").val("1");
+          $("#buttonSubmit").attr("onclick","saveTeam()");
 
 }
-function updateSlider(id){
-  $.ajax({
-    type:'POST',
-    data : {id : id},
-    url: url+'&tipe=updateSlider',
-      success: function(data) {
-      var resp = eval('(' + data + ')');
-        if(resp.err==''){
-          $("#formSliderBaru").modal();
-          $("#namaSlider").val(resp.content.namaSlider);
-          $("#statusPublish").val(resp.content.statusPublish);
-          $("#tempImage").attr('src',resp.content.gambarSlider);
-          $("#gambarSlider").val(resp.content.baseImage);
-          $("#buttonSubmit").attr("onclick","saveEditSlider("+id+")");
-        }else{
-          alert(resp.err);
-        }
-      }
-  });
+function updateTeam(id){
+  window.location = "pages.php?page=team&edit="+id;
+
 }
 
 
-function saveEditSlider(idEdit){
+function saveEditTeam(idEdit){
+  $("#LoadingImage").attr('style','display:block');
   $.ajax({
     type:'POST',
-    data : {
-        statusPublish : $("#statusPublish").val(),
-        gambarSlider : $("#gambarSlider").val(),
-        namaSlider : $("#namaSlider").val(),
-        idEdit : idEdit,
-    },
-    url: url+'&tipe=saveEditSlider',
+    data : $("#formTeam").serialize()+"&idEdit="+idEdit,
+    url: url+'&tipe=saveEditTeam',
       success: function(data) {
       var resp = eval('(' + data + ')');
+        $("#LoadingImage").hide();
         if(resp.err==''){
           suksesAlert("Data Tersimpan");
         }else{
@@ -128,9 +124,11 @@ function saveEditSlider(idEdit){
   });
 }
 
+
+
 function imageChanged(){
   var me= this;
-  var filesSelected = document.getElementById("imageSlider").files;
+  var filesSelected = document.getElementById("fileFotoTeam").files;
   if (filesSelected.length > 0)
   {
     var fileToLoad = filesSelected[0];
@@ -141,7 +139,7 @@ function imageChanged(){
     {
       var textAreaFileContents = document.getElementById
       (
-        "gambarSlider"
+        "fotoTeam"
       );
 
       textAreaFileContents.value = fileLoadedEvent.target.result;

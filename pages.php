@@ -72,6 +72,8 @@ if ($page == "informasi") {
     include 'pages/userManagement.php';
 }elseif ($page == "lowonganKerja") {
     include 'pages/lowonganKerja.php';
+}elseif ($page == "team") {
+    include 'pages/team.php';
 }else{
 echo " 404 ! halaman tidak di temukan ";
 }
@@ -95,22 +97,100 @@ echo " 404 ! halaman tidak di temukan ";
 </body>
 
 <?php include "footer.php";
-if($page == "acara"){?>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/css/materialize.min.css">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js"></script>
-<?php
-}
+
  ?>
 
 
 <script type="text/javascript">
+    function suksesAlert(pesan){
+        swal({
+        title: pesan,
+        type: "success"
+        }).then(function() {
+          <?php
+            if($_GET['action'] == 'confirm'){
+              ?>
+              window.location.reload();
+              <?php
+            }else{
+              ?>
+                refreshList();
+              <?php
+            }
+            ?>
+
+        });
+    }
+
+    function errorAlert(pesan){
+        swal({
+        title: pesan,
+        type: "warning"
+        }).then(function() {
+        });
+    }
     $(document).ready(function() {
-
-
-				loadTable();
+        <?php
+          if($_GET['action'] !='confirm'){
+          ?>
+				   loadTable();
+           <?php
+         }else{
+           ?>
+           loadKonfirmasi(<?php echo $_GET['idAcara'] ?>);
+           <?php
+         }
+          ?>
         $('.card .material-datatables label').addClass('form-group');
+        <?php
+            if($_GET['page'] == 'produk' && isset($_GET['edit'])){
+              $getDataEdit = sqlArray(sqlQuery("select * from produk where id='".$_GET['edit']."'"));
+              //clearDirectory("temp/".$_SESSION['username']);
+              $decodedJSON = json_decode($getDataEdit['screen_shot']);
+              for ($i=0; $i < sizeof($decodedJSON) ; $i++) {
+                  $explodeNamaGambar = explode('/',$decodedJSON[$i]->fileName);
+                  $jsonScreenshot[] = array(
+                            'name' => $explodeNamaGambar[3],
+                            'size' => filesize("temp/".$_SESSION['username']."/".$explodeNamaGambar[3]),
+                            'type' => 'image/jpeg',
+                            'imageLocation' => "temp/".$_SESSION['username']."/".$explodeNamaGambar[3],
+                  );;
+              }
+                ?>
+                Dropzone.autoDiscover = false;
+                var myDropzone = new Dropzone("#dropzone", {
+                    url: "upload.php",
+                    maxFileSize: 50,
+                    acceptedFiles: ".jpeg,.jpg,.png,.gif",
+                    addRemoveLinks: true,
+                    init: function() {
+                        this.on("complete", function(file) {
+                            $(".dz-remove").html("<div><span class='fa fa-trash text-danger' style='font-size: 1.5em;cursor:pointer;' >REMOVE</span></div>");
+                            // $(".dz-details").attr("onclick","deskripsiScreenShot('"+file.name+"')");
+                            $(".dz-details").attr("style","cursor:pointer;");
+                        });
+                        this.on("thumbnail", function(file) {
+                          console.log(file); // will send to console all available props
+                          file.previewElement.addEventListener("click", function() {
+                             deskripsiScreenShot(file.name);
+                          });
+                      });
+                        this.on("removedfile", function(file) {
+                             removeTemp(file.name);
+                      });
+                    }
 
-
+                });
+                $("#dropzone").attr('class','dropzone dz-clickable');
+                var existingFiles = <?php echo json_encode($jsonScreenshot) ?>;
+                for (i = 0; i < existingFiles.length; i++) {
+                    myDropzone.emit("addedfile", existingFiles[i]);
+                    myDropzone.emit("thumbnail", existingFiles[i], existingFiles[i].imageLocation);
+                    myDropzone.emit("complete", existingFiles[i]);
+                }
+                <?php
+            }
+        ?>z
     });
 </script>
 </html>

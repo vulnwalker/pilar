@@ -28,6 +28,21 @@ if ($_SESSION['status'] != "login") {
             font-size: unset;
         }
     </style>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.4.0/css/font-awesome.min.css" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.25.0/codemirror.min.css">
+
+    <!-- Include Editor style. -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/froala-editor/2.7.3/css/froala_editor.pkgd.min.css" rel="stylesheet" type="text/css" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/froala-editor/2.7.3/css/froala_style.min.css" rel="stylesheet" type="text/css" />
+
+<!-- Include JS file. -->
+    <script type='text/javascript' src='https://cdnjs.cloudflare.com/ajax/libs/froala-editor/2.7.3/js/froala_editor.min.js'></script>
+    <!-- Include external JS libs. -->
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.25.0/codemirror.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.25.0/mode/xml/xml.min.js"></script>
+
+<!-- Include Editor JS files. -->
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/froala-editor/2.7.3/js/froala_editor.pkgd.min.js"></script>
 </head>
 <body>
     <div class="wrapper">
@@ -74,6 +89,8 @@ if ($page == "informasi") {
     include 'pages/lowonganKerja.php';
 }elseif ($page == "team") {
     include 'pages/team.php';
+}elseif ($page == "profile") {
+    include 'pages/profile.php';
 }else{
 echo " 404 ! halaman tidak di temukan ";
 }
@@ -133,6 +150,7 @@ echo " 404 ! halaman tidak di temukan ";
         <?php
           if($_GET['action'] !='confirm'){
           ?>
+          $('textarea').froalaEditor();
 				   loadTable();
            <?php
          }else{

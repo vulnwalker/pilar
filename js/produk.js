@@ -1,3 +1,20 @@
+function showGambarProduk(id){
+  $.ajax({
+    type:'POST',
+    data : {
+        idproduk : id,
+    },
+    url: url+'&tipe=showGambarProduk',
+      success: function(data) {
+      var resp = eval('(' + data + ')');
+        if(resp.err==''){
+         $("#tempatGambar").html(resp.content.imagesProduks);
+        }else{
+          errorAlert(resp.err);
+        }
+      }
+  });
+}
 function saveProduk(){
   $.ajax({
     type:'POST',

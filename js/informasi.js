@@ -79,7 +79,15 @@ function baruInformasi(){
 
           $("#kiri").attr("checked",true);
 
-          $("#summernote").code("");
+          // tinymce.init({
+          //    selector: "textarea",
+          //    plugins: "a11ychecker, advcode, linkchecker, media mediaembed, powerpaste, tinymcespellchecker",
+          //    toolbar: "a11ycheck, code",
+          //    file_picker_types: 'file image media'
+          // });
+
+          
+
           $("#buttonSubmit").attr("onclick","saveInformasi()");
 
 }

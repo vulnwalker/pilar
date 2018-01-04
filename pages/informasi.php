@@ -140,11 +140,16 @@ switch($tipe){
 
      default:{
         ?>
+        <!-- Include Editor style. -->
+
+            <!-- Include external CSS. -->
+
         <script>
         var url = "http://"+window.location.hostname+"/api.php?page=informasi";
-
+        
         </script>
         <script src="js/informasi.js"></script>
+
 
         <div class="content">
             <div class="container-fluid">
@@ -260,8 +265,9 @@ switch($tipe){
                                             <!-- BEGIN SUMMERNOTE -->
                                             <div class="card">
                                                 <div class="card-body no-padding">
-                                                    <div id="summernote">
-                                                    </div>
+                                                    <!-- <div id="summernote">
+                                                    </div> -->
+                                                    <textarea id='isiInformasi'></textarea>
                                                 </div><!--end .card-body -->
                                             </div><!--end .card -->
                                             <!-- END SUMMERNOTE -->

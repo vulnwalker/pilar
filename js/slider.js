@@ -1,4 +1,5 @@
 function saveSlider(){
+  $("#LoadingImage").attr('style','display:block');
   $.ajax({
     type:'POST',
     data : {
@@ -10,9 +11,18 @@ function saveSlider(){
       success: function(data) {
       var resp = eval('(' + data + ')');
         if(resp.err==''){
-          suksesAlert("Data Tersimpan");
+          $("#LoadingImage").hide();
+         refreshList();
         }else{
-          errorAlert(resp.err);
+          // alert(resp.err);
+          swal({
+            position: 'top-right',
+            type: 'warning',
+            title: (resp.err),
+            showConfirmButton: true,
+            timer: 5000
+          });
+          $("#LoadingImage").hide();
         }
       }
   });
@@ -53,52 +63,14 @@ function loadTable(){
 
 
 function deleteSlider(id){
-  swal({
-      title: "Yakin Hapus Data",
-      type: "warning",
-      showCancelButton: true,
-      confirmButtonColor: '#DD6B55',
-      confirmButtonText: 'Ya',
-      cancelButtonText: "Tidak"
-   }).then(
-         function () {
-           $.ajax({
-             type:'POST',
-             data : {id:id},
-             url: url+'&tipe=deleteSlider',
-               success: function(data) {
-               var resp = eval('(' + data + ')');
-                 if(resp.err==''){
-                   suksesAlert("Data Terhapus");
-                 }else{
-                   errorAlert(resp.err);
-                 }
-               }
-           });
-         },
-         function () { return false; });
-}
-
-function baruSlider(){
-
-          $("#formSliderBaru").modal()
-          $("#buttonSubmit").attr("onclick","saveSlider()");
-
-}
-function updateSlider(id){
   $.ajax({
     type:'POST',
     data : {id : id},
-    url: url+'&tipe=updateSlider',
+    url: url+'&tipe=deleteSlider',
       success: function(data) {
       var resp = eval('(' + data + ')');
         if(resp.err==''){
-          $("#formSliderBaru").modal();
-          $("#namaSlider").val(resp.content.namaSlider);
-          $("#statusPublish").val(resp.content.statusPublish);
-          $("#tempImage").attr('src',resp.content.gambarSlider);
-          $("#gambarSlider").val(resp.content.baseImage);
-          $("#buttonSubmit").attr("onclick","saveEditSlider("+id+")");
+          refreshList();
         }else{
           alert(resp.err);
         }
@@ -106,8 +78,46 @@ function updateSlider(id){
   });
 }
 
+function baruSlider(){
+
+          $("#formSliderBaru").modal();
+          $("#buttonSubmit").attr("onclick","saveSlider()");
+
+}
+function updateSlider(id){
+  $("#LoadingImage").attr('style','display:block');
+  $.ajax({
+    type:'POST',
+    data : {id : id},
+    url: url+'&tipe=updateSlider',
+      success: function(data) {
+      var resp = eval('(' + data + ')');
+        if(resp.err==''){
+          $("#LoadingImage").hide();
+          $("#formSliderBaru").modal();
+          $("#namaSlider").val(resp.content.namaSlider);
+          $("#statusPublish").val(resp.content.statusPublish);
+          $("#tempImage").attr('src',resp.content.gambarSlider);
+          $("#gambarSlider").val(resp.content.baseImage);
+          $("#buttonSubmit").attr("onclick","saveEditSlider("+id+")");
+        }else{
+          // alert(resp.err);
+          swal({
+            position: 'top-right',
+            type: 'warning',
+            title: (resp.err),
+            showConfirmButton: true,
+            timer: 5000
+          });
+          $("#LoadingImage").hide();
+        }
+      }
+  });
+}
+
 
 function saveEditSlider(idEdit){
+  $("#LoadingImage").attr('style','display:block');
   $.ajax({
     type:'POST',
     data : {
@@ -120,9 +130,18 @@ function saveEditSlider(idEdit){
       success: function(data) {
       var resp = eval('(' + data + ')');
         if(resp.err==''){
-          suksesAlert("Data Tersimpan");
+          $("#LoadingImage").hide();
+          refreshList();
         }else{
-          errorAlert(resp.err);
+          // alert(resp.err);
+          swal({
+            position: 'top-right',
+            type: 'warning',
+            title: (resp.err),
+            showConfirmButton: true,
+            timer: 5000
+          });
+          $("#LoadingImage").hide();
         }
       }
   });

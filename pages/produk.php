@@ -67,7 +67,88 @@ if(!empty($tipe)){
 
 
 switch($tipe){
+    case 'showGambarProduk':{
+      $getNamaImage = sqlArray(sqlQuery("SELECT * from produk where id = '$idproduk' "));
+      $decodedJSON = json_decode($getNamaImage[screen_shot]);
+      for ($i=0; $i < sizeof($decodedJSON) ; $i++) {
+          $explodeNamaGambar = explode('/',$decodedJSON[$i]->fileName);
+          $jsonScreenshot[] = array(
+                    'name' => $explodeNamaGambar[3],
+                    'type' => 'image/jpeg',
+                    'imageLocation' => "temp/".$_SESSION['username']."/".$explodeNamaGambar[3],
+          );
+          if ($number == "") {
+            $listImage .="
+                <div class='item active'>
+                  <img src='".$decodedJSON[$i]->fileName."' alt='Awesome Image'>
+                  <div class='carousel-caption'>
+                  </div>
+                  <h5>".$decodedJSON[$i]->desc."</h5>
+                </div>
 
+          ";
+          }else{
+            $listImage .="
+                <div class='item'>
+                  <img src='".$decodedJSON[$i]->fileName."' alt='Awesome Image'>
+                  <div class='carousel-caption'>
+                  </div>
+                  <h5>".$decodedJSON[$i]->desc."</h5>
+                </div>
+                
+          ";
+          }
+        $number = "1";
+          
+      }
+      $imagesProduks = "
+        <!-- Carousel Card -->
+        <div class='card card-raised card-carousel'>
+          <div id='carousel-example-generic' class='carousel slide' data-ride='carousel'>
+            <div class='carousel slide' data-ride='carousel'>
+
+              <!-- Indicators -->
+
+              <!-- <ol class='carousel-indicators'>
+                <li data-target='#carousel-example-generic' data-slide-to='0' class='active'></li>
+                <li data-target='#carousel-example-generic' data-slide-to='1'></li>
+                <li data-target='#carousel-example-generic' data-slide-to='2'></li>
+              </ol> -->
+
+              <!-- Wrapper for slides -->
+              <div class='carousel-inner'>
+                
+                ".$listImage."
+                <!-- <div class='item'>
+                  <img src='images/produk/ATISISBADA/b3c18adb84f2548b04467090a673c529.jpg' alt='Awesome Image'>
+                  <div class='carousel-caption'>
+                  </div>
+                </div>
+                <div class='item'>
+                  <img src='images/produk/ATISISBADA/e8c6d95650a17cd8530834a8ce5ab45a.jpg' alt='Awesome Image'>
+                  <div class='carousel-caption'>
+                  </div>
+                </div> -->
+
+              </div>
+
+              <!-- Controls -->
+              <a class='left carousel-control' href='#carousel-example-generic' data-slide='prev' style='background: linear-gradient(to right, #0a0a0a45 , #0a0a0a00);'>
+                <i class='material-icons'><!-- keyboard_arrow_left --></i>
+              </a>
+              <a class='right carousel-control' href='#carousel-example-generic' data-slide='next' style='background: linear-gradient(to right, #08080800 , #0a0a0a45);'>
+                <i class='material-icons'><!-- keyboard_arrow_right --></i>
+              </a>
+            </div>
+          </div>
+        </div>
+        <!-- End Carousel Card -->
+      ";
+      $content = array("imagesProduks" => $imagesProduks);
+
+      echo generateAPI($cek,$err,$content);
+      break;
+}
     case 'saveProduk':{
       if(empty($namaProduk)){
           $err = "Isi nama produk";
@@ -225,7 +306,37 @@ switch($tipe){
                           <td><img src='$image_title'  class='materialboxed' style='width:100px;height:100px;'></img> </td>
                           <td>".generateDate($tanggal)."</td>
                           <td>$status</td>
-                          <td><input type='button'  class='waves-effect waves-light btn btn-primary' value='Show'></td>
+                          <td>
+                            <!-- <input type='button'  class='waves-effect waves-light btn btn-primary' value='Show'> -->
+                            <button class='btn btn-raised btn-round btn-primary' data-toggle='modal' data-target='#noticeModal' onclick=showGambarProduk($id);>
+                                show
+                            </button>
+                            <!-- notice modal -->
+                                            <div class='modal fade' id='noticeModal' tabindex='-1' role='dialog' aria-labelledby='myModalLabel' aria-hidden='true'>
+                                                <div class='modal-dialog modal-notice'>
+                                                    <div class='modal-content'>
+                                                        <div class='modal-header'>
+                                                            <button type='button' class='close' data-dismiss='modal' aria-hidden='true'> <!-- <i class='material-icons'>clear</i> --></button>
+                                                            <!-- <h5 class='modal-title' id='myModalLabel'>
+                                                              How Do You Become an Affiliate?
+                                                            </h5> -->
+                                                        </div>
+                                                        <div class='modal-body'>
+                                                            <div class='instruction'>
+                                                                <div class='row'>
+                                                                    <div class='col-md-12'>
+                                                                        
+                                                                      <div id='tempatGambar'></div>
+
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <!-- end notice modal -->
+                          </td>
                           <td class='text-right'>
                               <a onclick=updateProduk($id) class='btn btn-simple btn-warning btn-icon edit'><i class='material-icons'>dvr</i></a>
                               <a onclick=deleteProduk($id) class='btn btn-simple btn-danger btn-icon remove'><i class='material-icons'>close</i></a>
@@ -264,7 +375,6 @@ switch($tipe){
         <script src="js/dropzone/dropzone.js"></script>
         <script src="js/produk.js"></script>
         <link rel="stylesheet" href="js/dropzone/dropzone.css">
-
 
         <?php
             if(!isset($_GET['edit'])){

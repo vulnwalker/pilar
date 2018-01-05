@@ -6,18 +6,26 @@ function saveUser(){
     url: url+'&tipe=saveUser',
       success: function(data) {
       var resp = eval('(' + data + ')');
-      $("#LoadingImage").hide();
         if(resp.err==''){
-          suksesAlert("Data Tersimpan");
+          $("#LoadingImage").hide();
+          refreshList();
         }else{
-          errorAlert(resp.err);
+          // alert(resp.err);
+          swal({
+            position: 'top-right',
+            type: 'warning',
+            title: (resp.err),
+            showConfirmButton: true,
+            timer: 5000
+          });
+          $("#LoadingImage").hide();
         }
       }
   });
 }
 
 function refreshList(){
-    window.location = "pages.php?page=userManagement";
+    window.location.reload();
 }
 
 function loadTable(){
@@ -51,30 +59,19 @@ function loadTable(){
 
 
 function deleteUser(id){
-  swal({
-      title: "Yakin Hapus Data",
-      type: "warning",
-      showCancelButton: true,
-      confirmButtonColor: '#DD6B55',
-      confirmButtonText: 'Ya',
-      cancelButtonText: "Tidak"
-   }).then(
-         function () {
-           $.ajax({
-             type:'POST',
-             data : {id:id},
-             url: url+'&tipe=deleteUser',
-               success: function(data) {
-               var resp = eval('(' + data + ')');
-                 if(resp.err==''){
-                   suksesAlert("Data Terhapus");
-                 }else{
-                   errorAlert(resp.err);
-                 }
-               }
-           });
-         },
-         function () { return false; });
+  $.ajax({
+    type:'POST',
+    data : {id : id},
+    url: url+'&tipe=deleteUser',
+      success: function(data) {
+      var resp = eval('(' + data + ')');
+        if(resp.err==''){
+          refreshList();
+        }else{
+          alert(resp.err);
+        }
+      }
+  });
 }
 function clearTemp(){
   $("#data2").text("Baru");
@@ -101,40 +98,46 @@ function baruUser(){
 
 }
 function updateUser(id){
-  // $("#LoadingImage").attr('style','display:block');
-  // $.ajax({
-  //   type:'POST',
-  //   data : {id : id},
-  //   url: url+'&tipe=updateUser',
-  //     success: function(data) {
-  //     var resp = eval('(' + data + ')');
-  //       $("#LoadingImage").hide();
-  //       if(resp.err==''){
-  //         $("#data2").text("Edit");
-  //         $("#data2").click();
-  //         $("#divForUsername").attr("class","form-group label-floating is-focused");
-  //         $("#divForPassword").attr("class","form-group label-floating is-focused");
-  //         $("#divForEmail").attr("class","form-group label-floating is-focused");
-  //         $("#divForNama").attr("class","form-group label-floating is-focused");
-  //         $("#divForTelepon").attr("class","form-group label-floating is-focused");
-  //         $("#divForAlamat").attr("class","form-group label-floating is-focused");
-  //         $("#divForInstansi").attr("class","form-group label-floating is-focused");
-  //         $("#usernameUser").val(resp.content.usernameUser);
-  //         $("#passwordUser").val(resp.content.passwordUser);
-  //         $("#emailUser").val(resp.content.emailUser);
-  //         $("#namaUser").val(resp.content.namaUser);
-  //         $("#teleponUser").val(resp.content.teleponUser);
-  //         $("#alamatUser").text(resp.content.alamatUser);
-  //         $("#instansiUser").val(resp.content.instansiUser);
-  //         $("#statusUser").html(resp.content.statusUser);
-  //         $("#buttonSubmit").attr("onclick","saveEditUser("+id+")");
-  //       }else{
-  //         alert(resp.err);
-  //       }
-  //     }
-  // });
-  window.location = "pages.php?page=userManagement&edit="+id;
-
+  $("#LoadingImage").attr('style','display:block');
+  $.ajax({
+    type:'POST',
+    data : {id : id},
+    url: url+'&tipe=updateUser',
+      success: function(data) {
+      var resp = eval('(' + data + ')');
+        if(resp.err==''){
+          $("#LoadingImage").hide();
+          $("#data2").text("Edit");
+          $("#data2").click();
+          $("#divForUsername").attr("class","form-group label-floating is-focused");
+          $("#divForPassword").attr("class","form-group label-floating is-focused");
+          $("#divForEmail").attr("class","form-group label-floating is-focused");
+          $("#divForNama").attr("class","form-group label-floating is-focused");
+          $("#divForTelepon").attr("class","form-group label-floating is-focused");
+          $("#divForAlamat").attr("class","form-group label-floating is-focused");
+          $("#divForInstansi").attr("class","form-group label-floating is-focused");
+          $("#usernameUser").val(resp.content.usernameUser);
+          $("#passwordUser").val(resp.content.passwordUser);
+          $("#emailUser").val(resp.content.emailUser);
+          $("#namaUser").val(resp.content.namaUser);
+          $("#teleponUser").val(resp.content.teleponUser);
+          $("#alamatUser").text(resp.content.alamatUser);
+          $("#instansiUser").val(resp.content.instansiUser);
+          $("#statusUser").html(resp.content.statusUser);
+          $("#buttonSubmit").attr("onclick","saveEditUser("+id+")");
+        }else{
+          // alert(resp.err);
+          swal({
+            position: 'top-right',
+            type: 'warning',
+            title: (resp.err),
+            showConfirmButton: true,
+            timer: 5000
+          });
+          $("#LoadingImage").hide();
+        }
+      }
+  });
 }
 
 
@@ -146,11 +149,20 @@ function saveEditUser(idEdit){
     url: url+'&tipe=saveEditUser',
       success: function(data) {
       var resp = eval('(' + data + ')');
-        $("#LoadingImage").hide();
         if(resp.err==''){
-          suksesAlert("Data Tersimpan");
+          $("#LoadingImage").hide();
+          refreshList();
         }else{
-          errorAlert(resp.err);
+          
+          // alert(resp.err);
+          swal({
+            position: 'top-right',
+            type: 'warning',
+            title: (resp.err),
+            showConfirmButton: true,
+            timer: 5000
+          });
+          $("#LoadingImage").hide();
         }
       }
   });

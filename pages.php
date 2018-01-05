@@ -5,6 +5,7 @@ if ($_SESSION['status'] != "login") {
     header("location:index.php");
 }
  ?>
+<!-- <!DOCTYPE html> -->
 <html lang="id">
 <head>
 	<?php include "head.php"; ?>
@@ -27,22 +28,44 @@ if ($_SESSION['status'] != "login") {
         .btn.btn-sm, .btn-group-sm .btn, .navbar .navbar-nav>li>a.btn.btn-sm, .btn-group-sm .navbar .navbar-nav>li>a.btn{
             font-size: unset;
         }
+        .carousel .carousel-control.left, .carousel .carousel-control.right{
+            background-image: none;
+        }
+        .carousel .right{
+            cursor: url(assets/img/arrow-right.png), url(assets/img/arrow-right.cur), default !important;
+        }
+        .carousel .left{
+            cursor: url(assets/img/arrow-left.png), url(assets/img/arrow-left.cur), default !important;
+        }
+        .carousel .carousel-control{
+            width: 50%;
+        }
+        .carousel-control:hover, .carousel-control:focus{
+            outline: 0;
+            color: #fff;
+            text-decoration: none;
+            opacity: .9;
+            filter: alpha(opacity=90);
+        }
+        .carousel-control.right{
+            left: auto;
+            right: 0;
+            background-image: -webkit-linear-gradient(left, rgba(0,0,0,0.0001) 0, rgba(0,0,0,0.5) 100%);
+            background-image: -o-linear-gradient(left, rgba(0,0,0,0.0001) 0, rgba(0,0,0,0.5) 100%);
+            background-image: -webkit-gradient(linear, left top, right top, color-stop(0, rgba(0,0,0,0.0001)), to(rgba(0,0,0,0.5)));
+            background-image: linear-gradient(to right, rgba(0,0,0,0.0001) 0, rgba(0,0,0,0.5) 100%);
+            background-repeat: repeat-x;
+            filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#00000000', endColorstr='#80000000', GradientType=1);
+        }
+        .carousel-control.left{
+            background-image: -webkit-linear-gradient(left, rgba(0,0,0,0.5) 0, rgba(0,0,0,0.0001) 100%);
+            background-image: -o-linear-gradient(left, rgba(0,0,0,0.5) 0, rgba(0,0,0,0.0001) 100%);
+            background-image: -webkit-gradient(linear, left top, right top, color-stop(0, rgba(0,0,0,0.5)), to(rgba(0,0,0,0.0001)));
+            background-image: linear-gradient(to right, rgba(0,0,0,0.5) 0, rgba(0,0,0,0.0001) 100%);
+            background-repeat: repeat-x;
+            filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#80000000', endColorstr='#00000000', GradientType=1);
+        }
     </style>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.4.0/css/font-awesome.min.css" rel="stylesheet" type="text/css" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.25.0/codemirror.min.css">
-
-    <!-- Include Editor style. -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/froala-editor/2.7.3/css/froala_editor.pkgd.min.css" rel="stylesheet" type="text/css" />
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/froala-editor/2.7.3/css/froala_style.min.css" rel="stylesheet" type="text/css" />
-
-<!-- Include JS file. -->
-    <script type='text/javascript' src='https://cdnjs.cloudflare.com/ajax/libs/froala-editor/2.7.3/js/froala_editor.min.js'></script>
-    <!-- Include external JS libs. -->
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.25.0/codemirror.min.js"></script>
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.25.0/mode/xml/xml.min.js"></script>
-
-<!-- Include Editor JS files. -->
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/froala-editor/2.7.3/js/froala_editor.pkgd.min.js"></script>
 </head>
 <body>
     <div class="wrapper">
@@ -117,7 +140,6 @@ echo " 404 ! halaman tidak di temukan ";
 
  ?>
 
-
 <script type="text/javascript">
     function suksesAlert(pesan){
         swal({
@@ -150,13 +172,18 @@ echo " 404 ! halaman tidak di temukan ";
         <?php
           if($_GET['action'] !='confirm'){
           ?>
-          $('textarea').froalaEditor();
 				   loadTable();
            <?php
          }else{
+            if($_GET['page'] == 'acara'){
            ?>
-           loadKonfirmasi(<?php echo $_GET['idAcara'] ?>);
-           <?php
+              loadKonfirmasi(<?php echo $_GET['idAcara'] ?>);
+            <?php
+            }elseif($_GET['page'] == 'lowonganKerja') {
+              ?>
+              loadLamaran(<?php echo $_GET['idLowongan'] ?>);
+              <?php
+           }
          }
           ?>
         $('.card .material-datatables label').addClass('form-group');

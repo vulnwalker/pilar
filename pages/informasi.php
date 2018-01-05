@@ -140,16 +140,11 @@ switch($tipe){
 
      default:{
         ?>
-        <!-- Include Editor style. -->
-
-            <!-- Include external CSS. -->
-
         <script>
         var url = "http://"+window.location.hostname+"/api.php?page=informasi";
-        
+
         </script>
         <script src="js/informasi.js"></script>
-
 
         <div class="content">
             <div class="container-fluid">
@@ -215,6 +210,17 @@ switch($tipe){
                                               <!--  end card  -->
                                           </div>
                                         </div>
+                                        <div class="modal fade in" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" id="LoadingImage" style="display: none;">
+                                                <div class="modal-dialog modal-notice">
+                                                    <div class="modal-content" style="background-color: transparent; border: unset; box-shadow: unset;">
+                                                        <div class="modal-body">
+                                                            <!-- <div id="LoadingImage"> -->
+                                                              <img src="img/unnamed.gif" style="width: 30%; height: 30%; display: block; margin: auto;">
+                                                            <!-- </div> -->
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                        </div>
                                         <div class="tab-pane" id="infoBaru">
                                             <div class="row">
                                               <div class="col-lg-3 col-md-6 col-sm-3">
@@ -265,9 +271,8 @@ switch($tipe){
                                             <!-- BEGIN SUMMERNOTE -->
                                             <div class="card">
                                                 <div class="card-body no-padding">
-                                                    <!-- <div id="summernote">
-                                                    </div> -->
-                                                    <textarea id='isiInformasi'></textarea>
+                                                    <div id="summernote">
+                                                    </div>
                                                 </div><!--end .card-body -->
                                             </div><!--end .card -->
                                             <!-- END SUMMERNOTE -->

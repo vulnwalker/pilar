@@ -1,4 +1,5 @@
 function saveInformasi(){
+  $("#LoadingImage").attr('style','display:block');
   $.ajax({
     type:'POST',
     data : {
@@ -11,9 +12,18 @@ function saveInformasi(){
       success: function(data) {
       var resp = eval('(' + data + ')');
         if(resp.err==''){
+          $("#LoadingImage").hide();
           refreshList();
         }else{
-          alert(resp.err);
+          // alert(resp.err);
+          swal({
+            position: 'top-right',
+            type: 'warning',
+            title: (resp.err),
+            showConfirmButton: true,
+            timer: 5000
+          });
+          $("#LoadingImage").hide();
         }
       }
   });
@@ -79,19 +89,12 @@ function baruInformasi(){
 
           $("#kiri").attr("checked",true);
 
-          // tinymce.init({
-          //    selector: "textarea",
-          //    plugins: "a11ychecker, advcode, linkchecker, media mediaembed, powerpaste, tinymcespellchecker",
-          //    toolbar: "a11ycheck, code",
-          //    file_picker_types: 'file image media'
-          // });
-
-          
-
+          $("#summernote").code("");
           $("#buttonSubmit").attr("onclick","saveInformasi()");
 
 }
 function updateInformasi(id){
+  $("#LoadingImage").attr('style','display:block');
   $.ajax({
     type:'POST',
     data : {id : id},
@@ -99,6 +102,7 @@ function updateInformasi(id){
       success: function(data) {
       var resp = eval('(' + data + ')');
         if(resp.err==''){
+          $("#LoadingImage").hide();
           $("#data2").text("Edit");
           $("#data2").click();
           $("#judulInformasi").val(resp.content.judulInformasi);
@@ -112,7 +116,15 @@ function updateInformasi(id){
           $("#buttonSubmit").attr("onclick","saveEditInformasi("+id+")");
           // $("#isiInformasi").val(resp.content.isiInformasi);
         }else{
-          alert(resp.err);
+          // alert(resp.err);
+          swal({
+            position: 'top-right',
+            type: 'warning',
+            title: (resp.err),
+            showConfirmButton: true,
+            timer: 5000
+          });
+          $("#LoadingImage").hide();
         }
       }
   });
@@ -120,6 +132,7 @@ function updateInformasi(id){
 
 
 function saveEditInformasi(idEdit){
+  $("#LoadingImage").attr('style','display:block');
   $.ajax({
     type:'POST',
     data : {
@@ -133,9 +146,18 @@ function saveEditInformasi(idEdit){
       success: function(data) {
       var resp = eval('(' + data + ')');
         if(resp.err==''){
+          $("#LoadingImage").hide();
           refreshList();
         }else{
-          alert(resp.err);
+          // alert(resp.err);
+          swal({
+            position: 'top-right',
+            type: 'warning',
+            title: (resp.err),
+            showConfirmButton: true,
+            timer: 5000
+          });
+          $("#LoadingImage").hide();
         }
       }
   });

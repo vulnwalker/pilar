@@ -13,6 +13,9 @@ if ($_SESSION['status'] != "login") {
         /*.modal-dialog{
             width: 800px;
         }*/
+        th {
+            border-bottom: 1px solid black !important;
+        }
         .form-group.label-floating label.control-label, .form-group.label-placeholder label.control-label{
             left: 0;
         }
@@ -65,6 +68,8 @@ if ($_SESSION['status'] != "login") {
             background-repeat: repeat-x;
             filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#80000000', endColorstr='#00000000', GradientType=1);
         }
+
+
     </style>
 </head>
 <body>
@@ -72,26 +77,12 @@ if ($_SESSION['status'] != "login") {
         <div class="sidebar" data-active-color="rose" data-background-color="black" data-image="assets/img/sidebar-1.jpg">
 							<?php include "include/sidebar.php"; ?>
         </div>
-        <div class="main-panel">
-            <nav class="navbar navbar-transparent navbar-absolute">
-                <div class="container-fluid">
-                    <div class="navbar-minimize">
-                        <button id="minimizeSidebar" class="btn btn-round btn-white btn-fill btn-just-icon">
-                            <i class="material-icons visible-on-sidebar-regular">more_vert</i>
-                            <i class="material-icons visible-on-sidebar-mini">view_list</i>
-                        </button>
-                    </div>
-                    <div class="navbar-header">
-                        <button type="button" class="navbar-toggle" data-toggle="collapse">
-                            <span class="sr-only">Toggle navigation</span>
-                            <span class="icon-bar"></span>
-                            <span class="icon-bar"></span>
-                            <span class="icon-bar"></span>
-                        </button>
-                        <a class="navbar-brand" href="#"> </a>
-                    </div>
-                </div>
-            </nav>
+
+        <div class="main-panel" style="
+    margin-top: -7%;
+">
+
+
 						<?php
 $page = @$_GET['page'];
 if ($page == "informasi") {

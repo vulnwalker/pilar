@@ -41,14 +41,19 @@ function loadTable(){
               "pagingType": "full_numbers",
               "lengthMenu": [
                   [10, 25, 50, -1],
-                  [10, 25, 50, "All"]
+                  [10, 25, 50, "Semua"]
               ],
               responsive: true,
               language: {
                   search: "_INPUT_",
-                  searchPlaceholder: "Search records",
-              }
-
+                  searchPlaceholder: "Cari data",
+              },
+              "oLanguage": {
+                "sLengthMenu": "Data perhalaman &nbsp _MENU_ ",
+              },
+              "bSortable": false,
+              "ordering": false
+              // "aaSorting" : [[]]
           });
         }else{
           alert(resp.err);
@@ -73,73 +78,31 @@ function deleteUser(id){
       }
   });
 }
-function clearTemp(){
-  $("#data2").text("Baru");
-  $("#data2").click();
-}
-function baruUser(){
+ function checkSemua(n,fldName,elHeaderChecked,elJmlCek) {
 
-          $("#divForUsername").attr("class","form-group label-floating ");
-          $("#divForPassword").attr("class","form-group label-floating ");
-          $("#divForEmail").attr("class","form-group label-floating ");
-          $("#divForNama").attr("class","form-group label-floating ");
-          $("#divForTelepon").attr("class","form-group label-floating ");
-          $("#divForAlamat").attr("class","form-group label-floating ");
-          $("#divForInstansi").attr("class","form-group label-floating ");
-          $("#usernameUser").val("");
-          $("#passwordUser").val("");
-          $("#emailUser").val("");
-          $("#namaUser").val("");
-          $("#teleponUser").val("");
-          $("#alamatUser").text("");
-          $("#instansiUser").val("");
-          $("#statusUser").val("1");
-          $("#buttonSubmit").attr("onclick","saveUser()");
+   if (!fldName) {
+     fldName = 'cb';
+   }
+   if (!elHeaderChecked) {
+     elHeaderChecked = 'toggle';
+   }
+   var c = document.getElementById(elHeaderChecked).checked;
+   var n2 = 0;
+   for (i=0; i < n ; i++) {
+    cb = document.getElementById(fldName+i);
+    if (cb) {
+      cb.checked = c;
 
-}
-function updateUser(id){
-  $("#LoadingImage").attr('style','display:block');
-  $.ajax({
-    type:'POST',
-    data : {id : id},
-    url: url+'&tipe=updateUser',
-      success: function(data) {
-      var resp = eval('(' + data + ')');
-        if(resp.err==''){
-          $("#LoadingImage").hide();
-          $("#data2").text("Edit");
-          $("#data2").click();
-          $("#divForUsername").attr("class","form-group label-floating is-focused");
-          $("#divForPassword").attr("class","form-group label-floating is-focused");
-          $("#divForEmail").attr("class","form-group label-floating is-focused");
-          $("#divForNama").attr("class","form-group label-floating is-focused");
-          $("#divForTelepon").attr("class","form-group label-floating is-focused");
-          $("#divForAlamat").attr("class","form-group label-floating is-focused");
-          $("#divForInstansi").attr("class","form-group label-floating is-focused");
-          $("#usernameUser").val(resp.content.usernameUser);
-          $("#passwordUser").val(resp.content.passwordUser);
-          $("#emailUser").val(resp.content.emailUser);
-          $("#namaUser").val(resp.content.namaUser);
-          $("#teleponUser").val(resp.content.teleponUser);
-          $("#alamatUser").text(resp.content.alamatUser);
-          $("#instansiUser").val(resp.content.instansiUser);
-          $("#statusUser").html(resp.content.statusUser);
-          $("#buttonSubmit").attr("onclick","saveEditUser("+id+")");
-        }else{
-          // alert(resp.err);
-          swal({
-            position: 'top-right',
-            type: 'warning',
-            title: (resp.err),
-            showConfirmButton: true,
-            timer: 5000
-          });
-          $("#LoadingImage").hide();
-        }
-      }
-  });
-}
-
+      //  thisChecked($("#"+fldName+i).val(),fldName+i);
+      n2++;
+    }
+   }
+   if (c) {
+    document.getElementById(elJmlCek).value = n2;
+   } else {
+    document.getElementById(elJmlCek).value = 0;
+   }
+   }
 
 function saveEditUser(idEdit){
   $("#LoadingImage").attr('style','display:block');
@@ -153,7 +116,7 @@ function saveEditUser(idEdit){
           $("#LoadingImage").hide();
           refreshList();
         }else{
-          
+
           // alert(resp.err);
           swal({
             position: 'top-right',

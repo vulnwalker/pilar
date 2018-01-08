@@ -214,7 +214,7 @@ echo " 404 ! halaman tidak di temukan ";
               {
                   enableExif: true,
                   viewport: {
-                      width: 1250,
+                      width: 555,
                       height: 345,
                       // type: 'circle'
                   },

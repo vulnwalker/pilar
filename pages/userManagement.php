@@ -4,6 +4,16 @@ $cek = "";
 $err = "";
 $content = "";
 
+function setCekBox($cb, $KeyValueStr, $isi){
+  $hsl = '';
+  $Prefix = "userManagement";
+  /*if($KeyValueStr!=''){*/
+    $hsl = "<input type='checkbox' $isi id='".$Prefix."_cb$cb' name='".$Prefix."_cb[]'
+        value='".$KeyValueStr."' onchange = thisChecked('".$Prefix."_cb$cb','userManagement_jmlcek'); >";
+  /*}*/
+  return $hsl;
+}
+
 if(!empty($tipe)){
   include "../include/config.php";
   foreach ($_POST as $key => $value) {
@@ -11,15 +21,6 @@ if(!empty($tipe)){
   }
 }
 
-function setCekBox($cb, $KeyValueStr, $isi){
-  $hsl = '';
-  $Prefix = "userManagement";
-  /*if($KeyValueStr!=''){*/
-    $hsl = "<input type='checkbox' $isi id='".$Prefix."_cb$cb' name='".$Prefix."_cb[]'
-        value='".$KeyValueStr."' onchange = thisChecked('$KeyValueStr','".$Prefix."_cb$cb'); >";
-  /*}*/
-  return $hsl;
-}
 
 switch($tipe){
 
@@ -108,23 +109,20 @@ switch($tipe){
     break;
     }
 
-    case 'deleteUser':{
-      $query = "delete from users where id = '$id'";
-      sqlQuery($query);
+    case 'Hapus':{
+      for ($i=0; $i < sizeof($userManagement_cb) ; $i++) {
+        $query = "delete from users where id = '".$userManagement_cb[$i]."'";
+        sqlQuery($query);
+      }
+
       $cek = $query;
       echo generateAPI($cek,$err,$content);
     break;
     }
 
-    case 'updateUser':{
-      $getData = sqlArray(sqlQuery("select * from users where id = '$id'"));
-      $getRealPassword = sqlArray(sqlQuery("select * from wordlist where hash = '".$getData['password']."'"));
-      $arrayStatus = array(
-                array('1','MEMBER'),
-                array('2','ADMIN'),
-      );
-      $content = array("usernameUser" => $getData['username'],"statusUser" => cmbArray("statusUser",$getData['jenis_user'],$arrayStatus,"-- TYPE USER --","class='selectpicker' data-style='btn btn-primary btn-round' title='Single Select' data-size='7'"),
-       "emailUser" => $getData['email'], "passwordUser" => $getRealPassword['password'], "namaUser" => $getData['nama'], "teleponUser" => $getData['telepon'], "alamatUser" => $getData['alamat'], "instansiUser" => $getData['instansi']);
+    case 'Edit':{
+
+      $content = array("idEdit" => $userManagement_cb[0]);
       echo generateAPI($cek,$err,$content);
     break;
     }
@@ -144,41 +142,38 @@ switch($tipe){
         }
         $data .= "     <tr>
                           <td class='text-center'>$nomor</td>
-                          <td class='text-center'><span class='checkbox'><label>".setCekBox($nomorCB,$id,"")."&nbsp</label></span></td>
+                          <td class='text-center'><span class='checkbox'><label>".setCekBox($nomorCB,$id)."&nbsp</label></span></td>
                           <td>$nama</td>
+                          <td>$username</td>
                           <td>$email</td>
                           <td>$instansi</td>
                           <td>$telepon</td>
-                          <td>$alamat</td>
                           <td>$jenisUser</td>
                       </tr>
                     ";
           $nomor += 1;
           $nomorCB += 1;
       }
-
-      $tabel = "<form id='formUserManagement'><table id='datatables' class='cell-border table-striped ' cellspacing='0' width='100%' style='width:100%'>
+      $tabel = "<table id='datatables' class='cell-border table-striped ' cellspacing='0' width='100%' style='width:100%'>
           <thead>
               <tr>
                   <th>No</th>
                   <th class='text-center'><span class='checkbox'><label><input type='checkbox' name='userManagement_toogle' id='userManagement_toogle' onclick=checkSemua(100,'userManagement_cb','userManagement_toogle','userManagement_jmlcek')>&nbsp</label></span></th>
                   <th>Nama</th>
+                  <th>Username</th>
                   <th>Email</th>
                   <th>Instansi</th>
                   <th>Telepon</th>
-                  <th>Alamat</th>
                   <th>Kategori</th>
-
               </tr>
-
           </thead>
-
           <tbody>
             $data
           </tbody>
-      </table></form>";
+      </table>
+      <input type='hidden' name='userManagement_jmlcek' id='userManagement_jmlcek' value='0'>
+      ";
       $content = array("tabelUser" => $tabel);
-
       echo generateAPI($cek,$err,$content);
     break;
     }
@@ -190,167 +185,241 @@ switch($tipe){
 
         </script>
         <script src="js/userManagement.js"></script>
-
-
-
-        <div class="content" style="margin-top:100px;">
+        <nav class="navbar navbar-transparent navbar-absolute">
             <div class="container-fluid">
-              <div class="row">
-                <div class="col-md-12">
-
-                      <div class="card-content">
-                          <div class="col-md-2">
-                            <div class="card-content">
-                                <span id='minimizeSidebar' >
-                                 <i  class='material-icons visible-on-sidebar-regular' style="cursor:pointer;">
-                                    arrow_back
-                                 </i>
-                                 <i  class='material-icons visible-on-sidebar-mini' style="cursor:pointer;">
-                                    arrow_forward
-                                 </i>
-                               </span>
-
-                            </div>
-                          </div>
-                          <div class="col-md-10" style="text-align:right;">
-                            <div class="card-content">
-                              <i class='large material-icons' style="cursor:pointer;">
-                                 add_to_photos
-                              </i>
-                              <i class='large material-icons' style="cursor:pointer;">
-                                edit
-                              </i>
-                              <i class='large material-icons' style="cursor:pointer;">
-                                delete
-                              </i>
-
-                            </div>
-                          </div>
-                        </div>
-                    </div>
-                  </div>
-                <div class="row">
-                    <div class="col-md-12">
-                            <div class="card">
-                                <div class="card-content">
-                                    <div class="col-md-12" id='tableUser'>
-                                          <div class="card-content">
-                                              <h4 class="card-title">User Management</h4>
-                                              <div class="material-datatables">
-                                                  <table id="datatables" class="cell-border table-striped table-hover" cellspacing="0" width="100%" style="width:100%">
-                                                      <thead>
-                                                          <tr>
-                                                              <th>Judul</th>
-                                                              <th>Posisi</th>
-                                                              <th>Tanggal</th>
-                                                              <th>Penulis</th>
-                                                              <th>Status</th>
-                                                              <th class="disabled-sorting text-right">Actions</th>
-                                                          </tr>
-                                                      </thead>
-                                                      <tbody>
-                                                      </tbody>
-                                                  </table>
-                                              </div>
-                                      </div>
-                                </div>
-                            </div>
-                        </div>
+                <div class="navbar-minimize">
+                    <button id="minimizeSidebar" class="btn btn-round btn-white btn-fill btn-just-icon">
+                        <i class="material-icons visible-on-sidebar-regular">more_vert</i>
+                        <i class="material-icons visible-on-sidebar-mini">view_list</i>
+                    </button>
                 </div>
-                <!-- end row -->
+                <div class="navbar-header">
+                    <a class="navbar-brand" href="#">User Management</a>
+                </div>
             </div>
-        </div>
+        </nav>
+        <?php
+          if(!isset($_GET['action'])){
+            ?>
 
-
-
-  <!-- Popup Area -->
-
-        <div class="modal fade" id="formUserBaru" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-            <div class="modal-dialog" style="width:80%;">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
-                            <i class="material-icons">clear</i>
-                        </button>
-                        <h4 class="modal-title">User</h4>
-                    </div>
-                    <div class="modal-body">
-                        <form id='formUser'>
-                        <!-- Start Customisable -->
-                        <div class="row">
-                          <div class="col-md-6">
-                              <div class="row">
-                                  <div class="col-lg-6 col-md-4 col-sm-3">
-                                    <?php
-                                        $arrayStatus = array(
-                                                  array('1','PUBLISH'),
-                                                  array('2','NON PUBLISH'),
-                                        );
-                                        echo cmbArray("statusPublish","1",$arrayStatus,"STATUS","class='selectpicker' data-style='btn btn-primary btn-round' title='Single Select' data-size='7'")
-                                     ?>
+            <div class="content" style="margin-top:20px;">
+              <div class="container-fluid">
+                  <div class="row">
+                      <div class="col-md-12">
+                          <div class="card">
+                              <div class="card-content">
+                                  <div class="col-md-12" id='tableUser'>
+                                      <div style="float:right">
+                                        <button class="btn btn-primary" onclick="Baru();">Baru</button> &nbsp
+                                        <button class="btn btn-warning" onclick="Edit();">Edit</button> &nbsp
+                                        <button class="btn btn-danger" onclick="Hapus();">Hapus</button> &nbsp
+                                      </div>
+                                      <div class="material-datatables">
+                                        <form id='formUserManagement' name="formUserManagement" action="#">
+                                          <table id="datatables" class="table table-striped table-no-bordered table-hover" cellspacing="0" width="100%" style="width:100%">
+                                              <thead>
+                                                  <tr>
+                                                      <th>Judul</th>
+                                                      <th>Posisi</th>
+                                                      <th>Tanggal</th>
+                                                      <th>Penulis</th>
+                                                      <th>Status</th>
+                                                      <th class="disabled-sorting text-right">Actions</th>
+                                                  </tr>
+                                              </thead>
+                                              <tbody>
+                                              </tbody>
+                                          </table>
+                                        </form>
+                                      </div>
+                                    </div>
                                   </div>
                               </div>
                           </div>
                       </div>
-                        <!-- End Customisable -->
+                  </div>
+              </div>
+            </div>
 
-                        <!-- Start Form Input -->
-                        <div class="row">
-                            <div class="col-md-12 col-sm-12">
-                                <div class="form-group label-floating">
-                                    <label class="control-label">Judul User</label>
-                                    <input type="text" id='judulUser' class="form-control">
+            <?php
+          }else{
+              if($_GET['action'] == 'baru'){
+                ?>
+                <div class="content" style="margin-top:20px;">
+                  <div class="container-fluid">
+                    <div class="card">
+                      <div class="card-content">
+                          <form id='formUser'>
+                          <div class="row">
+                            <div class="col-lg-3 col-md-6 col-sm-3">
+                                <?php
+                                  $arrayStatus = array(
+                                            array('1','MEMBER'),
+                                            array('2','ADMIN'),
+                                  );
+                                  echo cmbArray("statusUser","",$arrayStatus,"-- TYPE USER --","class='form-control' data-style='btn btn-primary btn-round' title='Single Select' data-size='7'")
+                                ?>
+                            </div>
+                          </div>
+                          <div class="row">
+                            <div class="col-lg-12">
+                                <div class="form-group label-floating" id='divForUsername'>
+                                    <label class="control-label">Username</label>
+                                    <input type="text" id='usernameUser' name='usernameUser' class="form-control">
                                 </div>
                             </div>
-                        </div>
-                        <!-- End Form Input -->
-
-
-
-                        <!-- Start Checkbox and Radio Buttons -->
-                        <div class="row">
-                          <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2">
-                                <div class="radio">
-                                    <label class="control-label">Posisi User</label>
-                                </div>
                           </div>
-                          <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1">
-                              <div class="radio">
-                                  <label>
-                                      <input type="radio" value='1' id='kiri' name="posisiUser" checked> Kiri
-                                  </label>
+                            <div class="row">
+                              <div class="col-lg-12">
+                                  <div class="form-group label-floating" id='divForPassword'>
+                                      <label class="control-label">Password</label>
+                                      <input type="password" id='passwordUser' name='passwordUser' class="form-control">
+                                  </div>
                               </div>
-                          </div>
-                          <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1">
-                              <div class="radio">
-                                  <label>
-                                      <input type="radio" value='2' id='kanan' name="posisiUser"> Kanan
-                                  </label>
+                            </div>
+                            <div class="row">
+                              <div class="col-lg-12">
+                                  <div class="form-group label-floating" id='divForEmail'>
+                                      <label class="control-label">Email</label>
+                                      <input type="email" id='emailUser' name='emailUser' class="form-control">
+                                  </div>
                               </div>
+                            </div>
+                            <div class="row">
+                              <div class="col-lg-12">
+                                  <div class="form-group label-floating" id='divForNama'>
+                                      <label class="control-label">Nama Lengkap</label>
+                                      <input type="text" id='namaUser' name='namaUser' class="form-control">
+                                  </div>
+                              </div>
+                            </div>
+                            <div class="row">
+                              <div class="col-lg-12">
+                                  <div class="form-group label-floating" id='divForTelepon'>
+                                      <label class="control-label">Telepon</label>
+                                      <input type="number" id='teleponUser' name='teleponUser' class="form-control">
+                                  </div>
+                              </div>
+                            </div>
+                            <div class="row">
+                              <div class="col-lg-12">
+                                  <div class="form-group label-floating" id='divForAlamat'>
+                                      <label class="control-label">Alamat</label>
+                                      <textarea id='alamatUser' name='alamatUser' class="form-control"></textarea>
+                                  </div>
+                              </div>
+                            </div>
+                            <div class="row">
+                              <div class="col-lg-12">
+                                  <div class="form-group label-floating" id='divForInstansi'>
+                                      <label class="control-label">Instansi</label>
+                                      <input id='instansiUser' name='instansiUser' class="form-control">
+                                  </div>
+                              </div>
+                            </div>
+                            <div class="row">
+                              <div class="col-lg-12">
+                                <button type="button" class="btn btn-primary"  onclick="saveUser();" data-dismiss="modal">Simpan</button>
+                                <button type="button" class="btn btn-danger"  onclick="Batal();" data-dismiss="modal">Batal</button>
+                              </div>
+                            </div>
+                          </form>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                <?php
+              }elseif($_GET['action']=='edit'){
+                  $getData = sqlArray(sqlQuery("select * from users where id = '".$_GET['idEdit']."'"));
+                  $getRealPassword = sqlArray(sqlQuery("select * from wordlist where hash = '".$getData['password']."'"));
+                  ?>
+                  <div class="content" style="margin-top:20px;">
+                    <div class="container-fluid">
+                      <div class="card">
+                        <div class="card-content">
+                            <form id='formUser'>
+                            <div class="row">
+                              <div class="col-lg-3 col-md-6 col-sm-3">
+                                  <?php
+                                    $arrayStatus = array(
+                                              array('1','MEMBER'),
+                                              array('2','ADMIN'),
+                                    );
+                                    echo cmbArray("statusUser",$getData['jenis_user'],$arrayStatus,"-- TYPE USER --","class='form-control' data-style='btn btn-primary btn-round' title='Single Select' data-size='7'")
+                                  ?>
+                              </div>
+                            </div>
+                            <div class="row">
+                              <div class="col-lg-12">
+                                  <div class="form-group label-floating" id='divForUsername'>
+                                      <label class="control-label">Username</label>
+                                      <input type="text" id='usernameUser' name='usernameUser' value="<?php echo $getData['username'] ?>" class="form-control">
+                                  </div>
+                              </div>
+                            </div>
+                              <div class="row">
+                                <div class="col-lg-12">
+                                    <div class="form-group label-floating" id='divForPassword'>
+                                        <label class="control-label">Password</label>
+                                        <input type="password" id='passwordUser' name='passwordUser' value="<?php echo $getRealPassword['password'] ?>" class="form-control">
+                                    </div>
+                                </div>
+                              </div>
+                              <div class="row">
+                                <div class="col-lg-12">
+                                    <div class="form-group label-floating" id='divForEmail'>
+                                        <label class="control-label">Email</label>
+                                        <input type="email" id='emailUser' name='emailUser' value="<?php echo $getData['email'] ?>" class="form-control">
+                                    </div>
+                                </div>
+                              </div>
+                              <div class="row">
+                                <div class="col-lg-12">
+                                    <div class="form-group label-floating" id='divForNama'>
+                                        <label class="control-label">Nama Lengkap</label>
+                                        <input type="text" id='namaUser' name='namaUser' value="<?php echo $getData['nama'] ?>" class="form-control">
+                                    </div>
+                                </div>
+                              </div>
+                              <div class="row">
+                                <div class="col-lg-12">
+                                    <div class="form-group label-floating" id='divForTelepon'>
+                                        <label class="control-label">Telepon</label>
+                                        <input type="number" id='teleponUser' name='teleponUser' value="<?php echo $getData['telepon'] ?>"  class="form-control">
+                                    </div>
+                                </div>
+                              </div>
+                              <div class="row">
+                                <div class="col-lg-12">
+                                    <div class="form-group label-floating" id='divForAlamat'>
+                                        <label class="control-label">Alamat</label>
+                                        <textarea id='alamatUser' name='alamatUser' class="form-control"><?php echo $getData['alamat'] ?></textarea>
+                                    </div>
+                                </div>
+                              </div>
+                              <div class="row">
+                                <div class="col-lg-12">
+                                    <div class="form-group label-floating" id='divForInstansi'>
+                                        <label class="control-label">Instansi</label>
+                                        <input id='instansiUser' name='instansiUser' class="form-control" value="<?php echo $getData['instansi'] ?>">
+                                    </div>
+                                </div>
+                              </div>
+                              <div class="row">
+                                <div class="col-lg-12">
+                                  <button type="button" class="btn btn-primary"  onclick="saveEditUser(<?php echo $_GET['idEdit'] ?>);" data-dismiss="modal">Simpan</button>
+                                  <button type="button" class="btn btn-danger"  onclick="Batal();" data-dismiss="modal">Batal</button>
+                                </div>
+                              </div>
+                            </form>
                           </div>
                         </div>
-                        <!-- End Checkbox and Radio Buttons -->
-
-                        <!-- BEGIN SUMMERNOTE -->
-                        <div class="card">
-                            <div class="card-body no-padding">
-                                <div id="summernote">
-                                </div>
-                            </div><!--end .card-body -->
-                        </div><!--end .card -->
-                        <!-- END SUMMERNOTE -->
-
+                      </div>
                     </div>
-                  </form>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-simple" id='buttonSubmit' onclick="saveUser();" data-dismiss="modal">Simpan</button>
-                        <button type="button" class="btn btn-danger btn-simple" data-dismiss="modal">Close</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-
+                  <?php
+              }
+          }
+         ?>
 
         <div class="modal fade in" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" id="LoadingImage" style="display: none;">
                 <div class="modal-dialog modal-notice">

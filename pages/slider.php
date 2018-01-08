@@ -4,6 +4,15 @@ $cek = "";
 $err = "";
 $content = "";
 
+function setCekBox($cb, $KeyValueStr, $isi){
+  $hsl = '';
+  $Prefix = "slider";
+  /*if($KeyValueStr!=''){*/
+    $hsl = "<input type='checkbox' $isi id='".$Prefix."_cb$cb' name='".$Prefix."_cb[]'
+        value='".$KeyValueStr."' onchange = thisChecked('".$Prefix."_cb$cb','slider_jmlcek'); >";
+  /*}*/
+  return $hsl;
+}
 
 if(!empty($tipe)){
   include "../include/config.php";
@@ -17,112 +26,103 @@ switch($tipe){
 
     case 'saveSlider':{
       if(empty($namaSlider)){
-          $err = "Isi Nama Slider";
-      }elseif(empty($statusPublish)){
-          $err = "Pilih status publish";
-      }elseif(empty($gambarSlider)){
-          $err = "Pilih gambar Slider";
+          $err = "Isi nama slider";
+      }elseif(empty($statusKosong)){
+          $err = "Pilih gambar";
       }
       if(empty($err)){
-        $imageTitle = baseToImage($gambarSlider,"images/slider/".md5($namaSlider).md5(date("Y-m-d")).md5(date("H:i:s")).".jpg");
-        $data = array(
-                'nama' => $namaSlider,
-                'status' => $statusPublish,
-                'gambar' => "images/slider/".md5($namaSlider).md5(date("Y-m-d")).md5(date("H:i:s")).".jpg",
-        );
-        $query = sqlInsert("slider",$data);
-        sqlQuery($query);
-        $cek = $query;
-
+           baseToImage($baseSlider,"images/slider/".md5($namaSlider).md5(date("Y-m-d").date("H:i:s")).".jpg");
+          $data = array(
+                  'nama' => $namaSlider,
+                  'gambar' => "images/slider/".md5($namaSlider).md5(date("Y-m-d").date("H:i:s")).".jpg",
+                  'status' =>  $statusPublish,
+          );
+          $query = sqlInsert("slider",$data);
+          sqlQuery($query);
+          $cek = $query;
       }
-      $content = array("judulSlider" => $judulSlider);
-
       echo generateAPI($cek,$err,$content);
     break;
     }
 
     case 'saveEditSlider':{
       if(empty($namaSlider)){
-          $err = "Isi Nama Slider";
-      }elseif(empty($statusPublish)){
-          $err = "Pilih status publish";
-      }elseif(empty($gambarSlider)){
-          $err = "Pilih gambar Slider";
+          $err = "Isi nama slider";
       }
       if(empty($err)){
-        $imageTitle = baseToImage($gambarSlider,"images/slider/".md5($namaSlider).md5(date("Y-m-d")).md5(date("H:i:s")).".jpg");
-        $data = array(
-                'nama' => $namaSlider,
-                'status' => $statusPublish,
-                'gambar' => "images/slider/".md5($namaSlider).md5(date("Y-m-d")).md5(date("H:i:s")).".jpg",
-        );
-        $query = sqlUpdate("slider",$data,"id = '$idEdit'");
-        sqlQuery($query);
-        $cek = $query;
+           baseToImage($baseSlider,"images/slider/".md5($namaSlider).md5(date("Y-m-d").date("H:i:s")).".jpg");
+          $data = array(
+                  'nama' => $namaSlider,
+                  'gambar' => "images/slider/".md5($namaSlider).md5(date("Y-m-d").date("H:i:s")).".jpg",
+                  'status' =>  $statusPublish,
+          );
+          $query = sqlUpdate("slider",$data,"id = '$idEdit'");
+          sqlQuery($query);
+          $cek = $query;
       }
-      $content = array("judulSlider" => $judulSlider);
 
       echo generateAPI($cek,$err,$content);
     break;
     }
 
-    case 'deleteSlider':{
-      $query = "delete from slider where id = '$id'";
-      sqlQuery($query);
+    case 'Hapus':{
+      for ($i=0; $i < sizeof($slider_cb) ; $i++) {
+        $query = "delete from slider where id = '".$slider_cb[$i]."'";
+        sqlQuery($query);
+      }
       $cek = $query;
       echo generateAPI($cek,$err,$content);
     break;
     }
 
-    case 'updateSlider':{
-      $getData = sqlArray(sqlQuery("select * from slider where id = '$id'"));
-      $type = pathinfo($getData['gambar'], PATHINFO_EXTENSION);
-			$data = file_get_contents($getData['gambar']);
-			$baseOfFile = 'data:image/' . $type . ';base64,' . base64_encode($data);
-      $content = array("namaSlider" => $getData['nama'],"statusPublish" => $getData['status'], "gambarSlider" => $getData['gambar'], "baseImage" => $baseOfFile);
+    case 'Edit':{
+
+      $content = array("idEdit" => $slider_cb[0]);
       echo generateAPI($cek,$err,$content);
     break;
     }
 
     case 'loadTable':{
       $getData = sqlQuery("select * from slider");
-      while($dataSlider = sqlArray($getData)){
-        foreach ($dataSlider as $key => $value) {
+      $nomor = 1;
+      $nomorCB = 0;
+      while($dataUser = sqlArray($getData)){
+        foreach ($dataUser as $key => $value) {
             $$key = $value;
         }
-
-        if($status == "1"){
-            $status = "PUBLISH";
+        if($status == '1'){
+          $statusPublish = "YA";
         }else{
-            $status = "NON PUBLISH";
+          $statusPublish = "TIDAK";
         }
         $data .= "     <tr>
+                          <td class='text-center'>$nomor</td>
+                          <td class='text-center'><span class='checkbox'><label>".setCekBox($nomorCB,$id)."&nbsp</label></span></td>
+                          <td><img src='$gambar'  class='materialboxed' style='width:100px;height:100px;'></img></td>
                           <td>$nama</td>
-                          <td><img src='$gambar'  class='materialboxed' style='width:100px;height:100px;'></img> </td>
-                          <td>$status</td>
-                          <td class='text-right'>
-                              <a onclick=updateSlider($id) class='btn btn-simple btn-warning btn-icon edit'><i class='material-icons'>dvr</i></a>
-                              <a onclick=deleteSlider($id) class='btn btn-simple btn-danger btn-icon remove'><i class='material-icons'>close</i></a>
-                          </td>
+                          <td>$statusPublish</td>
                       </tr>
                     ";
+          $nomor += 1;
+          $nomorCB += 1;
       }
-
-      $tabel = "<table id='datatables' class='table table-striped table-no-bordered table-hover' cellspacing='0' width='100%' style='width:100%'>
+      $tabel = "<table id='datatables' class='cell-border table-striped ' cellspacing='0' width='100%' style='width:100%'>
           <thead>
               <tr>
-                  <th>Nama</th>
-                  <th>Gambar</th>
-                  <th>Status</th>
-                  <th class='disabled-sorting text-right'>Actions</th>
+                  <th width='2%'>No</th>
+                  <th width='2%' class='text-center'><span class='checkbox'><label><input type='checkbox' name='slider_toogle' id='slider_toogle' onclick=checkSemua(100,'slider_cb','slider_toogle','slider_jmlcek')>&nbsp</label></span></th>
+                  <th width='10%'>Gambar</th>
+                  <th width='92%'>Nama</th>
+                  <th width='2%'>Publish</th>
               </tr>
           </thead>
           <tbody>
             $data
           </tbody>
-      </table>";
-      $content = array("tabelSlider" => $tabel);
-
+      </table>
+      <input type='hidden' name='slider_jmlcek' id='slider_jmlcek' value='0'>
+      ";
+      $content = array("tabelUser" => $tabel);
       echo generateAPI($cek,$err,$content);
     break;
     }
@@ -131,161 +131,218 @@ switch($tipe){
         ?>
         <script>
         var url = "http://"+window.location.hostname+"/api.php?page=slider";
-
         </script>
-        <script src="js/dropzone/dropzone.js"></script>
         <script src="js/slider.js"></script>
-        <link rel="stylesheet" href="js/dropzone/dropzone.css">
 
-
-        <div class="content">
+        <nav class="navbar navbar-transparent navbar-absolute">
             <div class="container-fluid">
-                <div class="row">
-                    <!-- Start Modal -->
-                    <div class="col-md-12">
-                        <div class="card">
-                            <div class="card-content">
-                                <div class="row">
-                                    <div class="col-md-12 text-left">
-                                        <button class="btn btn-primary btn-raised btn-round" data-toggle="modal" onclick="baruSlider();">
-                                            Slider Baru
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- End Modal -->
-
-
-
-                    <div class="col-md-12" id='tableSlider'>
-                        <div class="card">
-                            <div class="card-header card-header-icon" data-background-color="purple">
-                                <i class="material-icons">assignment</i>
-                            </div>
-                            <div class="card-content">
-                                <h4 class="card-title">Data slider</h4>
-                                <div class="toolbar">
-                                    <!--        Here you can write extra buttons/actions for the toolbar              -->
-                                </div>
-                                <div class="material-datatables">
-                                    <table id="datatables" class="table table-striped table-no-bordered table-hover" cellspacing="0" width="100%" style="width:100%">
-                                        <thead>
-                                            <tr>
-                                                <th>Judul</th>
-                                                <th>Posisi</th>
-                                                <th>Tanggal</th>
-                                                <th>Penulis</th>
-                                                <th>Status</th>
-                                                <th class="disabled-sorting text-right">Actions</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                            <!-- end content-->
-                        </div>
-                        <!--  end card  -->
-                    </div>
-                    <div class="modal fade in" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" id="LoadingImage" style="display: none;">
-                                                <div class="modal-dialog modal-notice">
-                                                    <div class="modal-content" style="background-color: transparent; border: unset; box-shadow: unset;">
-                                                        <div class="modal-body">
-                                                            <!-- <div id="LoadingImage"> -->
-                                                              <img src="img/unnamed.gif" style="width: 30%; height: 30%; display: block; margin: auto;">
-                                                            <!-- </div> -->
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                        </div>
-                    <!-- end col-md-12 -->
+                <div class="navbar-minimize">
+                    <button id="minimizeSidebar" class="btn btn-round btn-white btn-fill btn-just-icon">
+                        <i class="material-icons visible-on-sidebar-regular">more_vert</i>
+                        <i class="material-icons visible-on-sidebar-mini">view_list</i>
+                    </button>
                 </div>
-                <!-- end row -->
+                <div class="navbar-header">
+                    <a class="navbar-brand" href="#">Slider</a>
+                </div>
             </div>
-        </div>
+        </nav>
+        <?php
+          if(!isset($_GET['action'])){
+            ?>
 
-
-
-  <!-- Popup Area -->
-
-        <div class="modal fade" id="formSliderBaru" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
-                            <i class="material-icons">clear</i>
-                        </button>
-                        <h4 class="modal-title">Slider</h4>
-                    </div>
-                    <div class="modal-body">
-
-                        <!-- Start Customisable -->
-                        <div class="row">
-                          <div class="col-md-6">
-                              <div class="row">
-                                  <div class="col-lg-6 col-md-4 col-sm-3">
-                                    <?php
-                                        $arrayStatus = array(
-                                                  array('1','PUBLISH'),
-                                                  array('2','NON PUBLISH'),
-                                        );
-                                        echo cmbArray("statusPublish","1",$arrayStatus,"STATUS","class='selectpicker' data-style='btn btn-primary btn-round' title='Single Select' data-size='7'")
-                                     ?>
+            <div class="content" style="margin-top:20px;">
+              <div class="container-fluid">
+                  <div class="row">
+                      <div class="col-md-12">
+                          <div class="card">
+                              <div class="card-content">
+                                  <div class="col-md-12" id='tableUser'>
+                                      <div style="float:right">
+                                        <button class="btn btn-primary" onclick="Baru();">Baru</button> &nbsp
+                                        <button class="btn btn-warning" onclick="Edit();">Edit</button> &nbsp
+                                        <button class="btn btn-danger" onclick="Hapus();">Hapus</button> &nbsp
+                                      </div>
+                                      <div class="material-datatables">
+                                        <form id='formSlider' name="formSlider" action="#">
+                                          <table id="datatables" class="table table-striped table-no-bordered table-hover" cellspacing="0" width="100%" style="width:100%">
+                                              <thead>
+                                                  <tr>
+                                                      <th>Judul</th>
+                                                      <th>Posisi</th>
+                                                      <th>Tanggal</th>
+                                                      <th>Penulis</th>
+                                                      <th>Status</th>
+                                                      <th class="disabled-sorting text-right">Actions</th>
+                                                  </tr>
+                                              </thead>
+                                              <tbody>
+                                              </tbody>
+                                          </table>
+                                        </form>
+                                      </div>
+                                    </div>
                                   </div>
                               </div>
                           </div>
                       </div>
-                        <!-- End Customisable -->
-                        <div class="row">
-                            <div class="col-md-12 col-sm-12">
-                                <div class="form-group label-floating">
-                                  <div class="fileinput fileinput-new text-center" data-provides="fileinput">
-                                              <div class="fileinput-new thumbnail">
-                                                  <img  src="assets/img/image_placeholder.jpg" id='tempImage' alt="...">
-                                              </div>
-                                              <div class="fileinput-preview fileinput-exists thumbnail"></div>
-                                              <div>
-                                                  <span class="btn btn-rose btn-round btn-file">
-                                                      <span class="fileinput-new">Select image</span>
-                                                      <span class="fileinput-exists">Change</span>
-                                                      <input type="file" onchange="imageChanged();" id='imageSlider' name="imageSlider">
-                                                  </span>
-                                                  <a href="#pablo" class="btn btn-danger btn-round fileinput-exists" data-dismiss="fileinput"><i class="fa fa-times"></i> Remove</a>
-                                              </div>
-                                              <input type="hidden" id='gambarSlider' >
-                                          </div>
-                                </div>
-                            </div>
-                        </div>
-                        <!-- Start Form Input -->
-                        <div class="row">
-                            <div class="col-md-12 col-sm-12">
-                                <div class="form-group label-floating">
-                                    <label class="control-label">Nama Slider</label>
-                                    <input type="text" id='namaSlider' class="form-control">
-                                </div>
-                            </div>
-                        </div>
-                        <!-- End Form Input -->
+                  </div>
+              </div>
+            </div>
 
+            <?php
+          }else{
+              if($_GET['action'] == 'baru'){
+                ?>
+                <div class="content" style="margin-top:20px;">
+                  <div class="container-fluid">
+                    <div class="card">
+                      <div class="card-content">
+                          <form id='formSlider'>
+                          <div class="row">
+                            <div class="col-lg-3 col-md-6 col-sm-3">
+                                <div class="form-group label-floating" >
+                                  <label class="control-label">Publish</label>
+                                  <?php
+                                    $arrayStatus = array(
+                                              array('1','YA'),
+                                              array('2','TIDAK'),
+                                    );
+                                    echo cmbArrayEmpty("statusPublish","",$arrayStatus,"-- PUBLISH --","class='form-control' data-style='btn btn-primary btn-round' title='Single Select' data-size='7'")
+                                  ?>
+                                </div>
+                            </div>
+                          </div>
+
+                          <div class="row">
+                            <div class="col-lg-12">
+                                <div class="form-group label-floating">
+                                    <label class="control-label">Nama</label>
+                                    <input type="text" id='namaSlider' name='namaSlider' class="form-control">
+                                </div>
+                            </div>
+                          </div>
+                          <div class="row">
+                            <div class="col-lg-12 col-md-12 col-sm-12">
+                                <img id="gambarSlider" src="assets/img/image_placeholder.jpg"
+                                />
+                                <br>
+                                <div class="actions">
+                            </div>
+                            </div>
+                          </div>
+                          <div class="row">
+                            <div class="col-md-4 col-sm-4">
+                              <span class="btn btn-rose btn-round btn-file">
+                                <span class="fileinput-exists">Change</span>
+                                <input type="hidden" id='statusKosong' name='statusKosong'>
+                                <input type="file" accept='image/x-png,image/gif,image/jpeg' onchange="imageChanged();" id='imageProduk' name="imageProduk">
+                              </span>
+                            </div>
+                          </div>
+                          <div class="row">
+                            <div class="col-lg-12">
+                              <br><br>
+                            </div>
+                          </div>
+                            <div class="row">
+                              <div class="col-lg-12">
+                                <button type="button" class="btn btn-primary"  onclick="saveSlider();" data-dismiss="modal">Simpan</button>
+                                <button type="button" class="btn btn-danger"  onclick="Batal();" data-dismiss="modal">Batal</button>
+                              </div>
+                            </div>
+                          </form>
+                        </div>
+                      </div>
                     </div>
+                  </div>
+                <?php
+              }elseif($_GET['action']=='edit'){
+                  $getData = sqlArray(sqlQuery("select * from slider where id = '".$_GET['idEdit']."'"));
+                  ?>
+                  <div class="content" style="margin-top:20px;">
+                    <div class="container-fluid">
+                      <div class="card">
+                        <div class="card-content">
+                            <form id='formSlider'>
+                            <div class="row">
+                              <div class="col-lg-3 col-md-6 col-sm-3">
+                                  <div class="form-group label-floating" >
+                                    <label class="control-label">Publish</label>
+                                    <?php
+                                      $arrayStatus = array(
+                                                array('1','YA'),
+                                                array('2','TIDAK'),
+                                      );
+                                      echo cmbArrayEmpty("statusPublish",$getData['status'],$arrayStatus,"-- PUBLISH --","class='form-control' data-style='btn btn-primary btn-round' title='Single Select' data-size='7'")
+                                    ?>
+                                  </div>
+                              </div>
+                            </div>
 
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-simple" id='buttonSubmit' onclick="saveSlider();" data-dismiss="modal">Simpan</button>
-                        <button type="button" class="btn btn-danger btn-simple" data-dismiss="modal">Close</button>
+                            <div class="row">
+                              <div class="col-lg-12">
+                                  <div class="form-group label-floating">
+                                      <label class="control-label">Nama</label>
+                                      <input type="text" id='namaSlider' name='namaSlider' class="form-control" value="<?php echo $getData['nama'] ?>">
+                                  </div>
+                              </div>
+                            </div>
+                            <div class="row">
+                              <div class="col-lg-12 col-md-12 col-sm-12">
+                                  <img id="gambarSlider" src="<?php echo $getData['gambar'] ?>"
+                                  />
+                                  <br>
+                                  <div class="actions">
+                              </div>
+                              </div>
+                            </div>
+                            <div class="row">
+                              <div class="col-md-4 col-sm-4">
+                                <span class="btn btn-rose btn-round btn-file">
+                                  <span class="fileinput-exists">Change</span>
+                                  <input type="hidden" id='baseSlider' name='baseSlider' value=<?php echo base64_decode($getData['gambar']) ?>>
+                                  <input type="file" accept='image/x-png,image/gif,image/jpeg' onchange="imageChanged();" id='imageProduk' name="imageProduk">
+                                </span>
+                              </div>
+                            </div>
+                            <div class="row">
+                              <div class="col-lg-12">
+                                <br><br>
+                              </div>
+                            </div>
+                              <div class="row">
+                                <div class="col-lg-12">
+                                  <button type="button" class="btn btn-primary"  onclick="saveEditSlider(<?php echo $_GET['idEdit'] ?>);" data-dismiss="modal">Simpan</button>
+                                  <button type="button" class="btn btn-danger"  onclick="Batal();" data-dismiss="modal">Batal</button>
+                                </div>
+                              </div>
+                            </form>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  <?php
+              }
+          }
+         ?>
+
+        <div class="modal fade in" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" id="LoadingImage" style="display: none;">
+                <div class="modal-dialog modal-notice">
+                    <div class="modal-content" style="background-color: transparent; border: unset; box-shadow: unset;">
+                        <div class="modal-body">
+                            <!-- <div id="LoadingImage"> -->
+                              <img src="img/unnamed.gif" style="width: 30%; height: 30%; display: block; margin: auto;">
+                            <!-- </div> -->
+                        </div>
                     </div>
                 </div>
-            </div>
         </div>
 <?php
-    clearDirectory("temp");
+
      break;
      }
 
 }
-
 
 ?>

@@ -78,6 +78,15 @@ function cmbArray($name='txtField',$value='',$arrList = '',$default='Pilih', $pa
 	$Input  = "<select $param name='$name'  id='$name' >$Input</select>";
 	return $Input;
 }
+function cmbArrayEmpty($name='txtField',$value='',$arrList = '',$default='Pilih', $param='') {
+ 	$isi = $value;
+	for($i=0;$i<count($arrList);$i++) {
+		$Sel = $isi==$arrList[$i][0]?" selected ":"";
+		$Input .= "<option $Sel value='{$arrList[$i][0]}'>{$arrList[$i][1]}</option>";
+	}
+	$Input  = "<select $param name='$name'  id='$name' >$Input</select>";
+	return $Input;
+}
 
 function generateAPI($cek,$err,$content){
 		$api = array('cek'=>$cek, 'err'=>$err, 'content'=>$content);

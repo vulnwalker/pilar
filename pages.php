@@ -9,13 +9,12 @@ if ($_SESSION['status'] != "login") {
 <html lang="id">
 <head>
 	<?php include "head.php"; ?>
+    <!--  CSS for Demo Purpose, don't include it in your project     -->
+    <link href="assets/css/demo.css" rel="stylesheet" />
     <style type="text/css">
         /*.modal-dialog{
             width: 800px;
         }*/
-        th {
-            border-bottom: 1px solid black !important;
-        }
         .form-group.label-floating label.control-label, .form-group.label-placeholder label.control-label{
             left: 0;
         }
@@ -68,20 +67,39 @@ if ($_SESSION['status'] != "login") {
             background-repeat: repeat-x;
             filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#80000000', endColorstr='#00000000', GradientType=1);
         }
+        .gj-datepicker{
+            width: 100%;
+        }
+
+
 
 
     </style>
+
+
+    <?php
+      if($_GET['page'] == 'informasi' && isset($_GET['action'])){
+        ?>
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.4.0/css/font-awesome.min.css" rel="stylesheet" type="text/css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.25.0/codemirror.min.css">
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/froala-editor/2.7.3/css/froala_editor.pkgd.min.css" rel="stylesheet" type="text/css" />
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/froala-editor/2.7.3/css/froala_style.min.css" rel="stylesheet" type="text/css" />
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.25.0/codemirror.min.js"></script>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.25.0/mode/xml/xml.min.js"></script>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/froala-editor/2.7.3/js/froala_editor.pkgd.min.js"></script>
+
+        <?php
+      }
+
+     ?>
 </head>
 <body>
     <div class="wrapper">
         <div class="sidebar" data-active-color="rose" data-background-color="black" data-image="assets/img/sidebar-1.jpg">
 							<?php include "include/sidebar.php"; ?>
         </div>
-
-        <div class="main-panel" style="
-    margin-top: -7%;
-">
-
+        <div class="main-panel">
 
 						<?php
 $page = @$_GET['page'];
@@ -112,25 +130,37 @@ echo " 404 ! halaman tidak di temukan ";
 
 
 ?>
-            <!-- <footer class="footer">
-                <div class="container-fluid">
-                    <p class="copyright pull-right">
-                        &copy;
-                        <script>
-                            document.write(new Date().getFullYear())
-                        </script>
-                        <a href="http://www.creative-tim.com/">Creative Tim</a>, made with love for a better web
-                    </p>
-                </div>
-            </footer> -->
         </div>
     </div>
 </body>
 
-<?php include "footer.php";
+<?php include "footer.php";?>
+<!-- Material Dashboard DEMO methods, don't include it in your project! -->
+<script src="assets/js/demo.js"></script>
+<script src="js/daftarObject.js"></script>
+<link rel="stylesheet" href="js/crop/croppie.css" />
+<script src="js/crop/croppie.js"></script>
+<script src="js/exif-js/exif-js.js"></script>
+<?php
+  if($_GET['page'] == 'informasi' && isset($_GET['action'])){
+    ?>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.25.0/codemirror.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.25.0/mode/xml/xml.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/froala-editor/2.7.3/js/froala_editor.pkgd.min.js"></script>
+
+    <?php
+  }
 
  ?>
 
+
+<script type="text/javascript">
+    $(document).ready(function() {
+        $('#isiInformasi').froalaEditor();
+        md.initSliders();
+        demo.initFormExtendedDatetimepickers();
+    });
+</script>
 <script type="text/javascript">
     function suksesAlert(pesan){
         swal({
@@ -176,7 +206,32 @@ echo " 404 ! halaman tidak di temukan ";
               <?php
            }
          }
+
+
+         if($_GET['page'] == 'slider' && isset($_GET['action'])){
+            ?>
+            $('#gambarSlider').croppie(
+              {
+                  enableExif: true,
+                  viewport: {
+                      width: 1250,
+                      height: 345,
+                      // type: 'circle'
+                  },
+                  // boundary: {
+                  //     width: 300,
+                  //     height: 300
+                  // }
+              }
+            );
+            // $('#gambarSlider').croppie('setZoom',0);
+            <?php
+         }
           ?>
+
+
+
+
         $('.card .material-datatables label').addClass('form-group');
         <?php
             if($_GET['page'] == 'produk' && isset($_GET['edit'])){
@@ -224,9 +279,40 @@ echo " 404 ! halaman tidak di temukan ";
                     myDropzone.emit("thumbnail", existingFiles[i], existingFiles[i].imageLocation);
                     myDropzone.emit("complete", existingFiles[i]);
                 }
+                $('#plugin').cropbox({
+                     selectors: {
+                         inputInfo: '#plugin textarea.data',
+                         inputFile: '#plugin input[type="file"]',
+                         btnCrop: '#plugin .btn-crop',
+                         btnReset: '#plugin .btn-reset',
+                         resultContainer: '#plugin .cropped',
+                         messageBlock: '#message'
+                     },
+                     imageOptions: {
+                         style: 'margin-right: 5px; margin-bottom: 5px'
+                     },
+                     variants: [
+                         {
+                             width: 200,
+                             height: 200,
+                             minWidth: 180,
+                             minHeight: 200,
+                             maxWidth: 350,
+                             maxHeight: 350
+                         },
+                         {
+                             width: 150,
+                             height: 200
+                         }
+                     ],
+                     messages: [
+                         'Crop a middle image.',
+                         'Crop a small image.'
+                     ]
+                  });
                 <?php
             }
-        ?>z
+        ?>
     });
 </script>
 </html>

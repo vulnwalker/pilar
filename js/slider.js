@@ -1,155 +1,65 @@
 function saveSlider(){
-  $("#LoadingImage").attr('style','display:block');
-  $.ajax({
-    type:'POST',
-    data : {
-        statusPublish : $("#statusPublish").val(),
-        gambarSlider : $("#gambarSlider").val(),
-        namaSlider : $("#namaSlider").val(),
-    },
-    url: url+'&tipe=saveSlider',
-      success: function(data) {
-      var resp = eval('(' + data + ')');
-        if(resp.err==''){
+  $('#gambarSlider').croppie('result', {
+      type: 'base64',
+      size: 'viewport',
+      format: 'jpeg'
+  }).then(function (resp) {
+      // $("#baseSlider").val(resp);
+      $("#LoadingImage").attr('style','display:block');
+      $.ajax({
+        type:'POST',
+        data : {
+                namaSlider : $("#namaSlider").val(),
+                statusPublish : $("#statusPublish").val(),
+                baseSlider : resp,
+                statusKosong : $("#statusKosong").val(),
+                },
+        url: url+'&tipe=saveSlider',
+          success: function(data) {
           $("#LoadingImage").hide();
-         refreshList();
-        }else{
-          // alert(resp.err);
-          swal({
-            position: 'top-right',
-            type: 'warning',
-            title: (resp.err),
-            showConfirmButton: true,
-            timer: 5000
-          });
-          $("#LoadingImage").hide();
-        }
-      }
+          var resp = eval('(' + data + ')');
+            if(resp.err==''){
+              suksesAlert("Data Tersimpan");
+            }else{
+              errorAlert(resp.err);
+            }
+          }
+      });
   });
-}
 
-function refreshList(){
-    window.location.reload();
-}
-
-function loadTable(){
-  $.ajax({
-    type:'POST',
-
-    url: url+'&tipe=loadTable',
-      success: function(data) {
-      var resp = eval('(' + data + ')');
-        if(resp.err==''){
-          $("#datatables").html(resp.content.tabelSlider);
-          $('#datatables').DataTable({
-              "pagingType": "full_numbers",
-              "lengthMenu": [
-                  [10, 25, 50, -1],
-                  [10, 25, 50, "All"]
-              ],
-              responsive: true,
-              language: {
-                  search: "_INPUT_",
-                  searchPlaceholder: "Search records",
-              }
-
-          });
-        }else{
-          alert(resp.err);
-        }
-      }
-  });
-}
-
-
-function deleteSlider(id){
-  $.ajax({
-    type:'POST',
-    data : {id : id},
-    url: url+'&tipe=deleteSlider',
-      success: function(data) {
-      var resp = eval('(' + data + ')');
-        if(resp.err==''){
-          refreshList();
-        }else{
-          alert(resp.err);
-        }
-      }
-  });
-}
-
-function baruSlider(){
-
-          $("#formSliderBaru").modal();
-          $("#buttonSubmit").attr("onclick","saveSlider()");
 
 }
-function updateSlider(id){
-  $("#LoadingImage").attr('style','display:block');
-  $.ajax({
-    type:'POST',
-    data : {id : id},
-    url: url+'&tipe=updateSlider',
-      success: function(data) {
-      var resp = eval('(' + data + ')');
-        if(resp.err==''){
-          $("#LoadingImage").hide();
-          $("#formSliderBaru").modal();
-          $("#namaSlider").val(resp.content.namaSlider);
-          $("#statusPublish").val(resp.content.statusPublish);
-          $("#tempImage").attr('src',resp.content.gambarSlider);
-          $("#gambarSlider").val(resp.content.baseImage);
-          $("#buttonSubmit").attr("onclick","saveEditSlider("+id+")");
-        }else{
-          // alert(resp.err);
-          swal({
-            position: 'top-right',
-            type: 'warning',
-            title: (resp.err),
-            showConfirmButton: true,
-            timer: 5000
-          });
-          $("#LoadingImage").hide();
-        }
-      }
-  });
-}
-
-
 function saveEditSlider(idEdit){
-  $("#LoadingImage").attr('style','display:block');
-  $.ajax({
-    type:'POST',
-    data : {
-        statusPublish : $("#statusPublish").val(),
-        gambarSlider : $("#gambarSlider").val(),
-        namaSlider : $("#namaSlider").val(),
-        idEdit : idEdit,
-    },
-    url: url+'&tipe=saveEditSlider',
-      success: function(data) {
-      var resp = eval('(' + data + ')');
-        if(resp.err==''){
+  $('#gambarSlider').croppie('result', {
+      type: 'base64',
+      size: 'viewport',
+      format: 'jpeg'
+  }).then(function (resp) {
+      $("#LoadingImage").attr('style','display:block');
+      $.ajax({
+        type:'POST',
+        data : {
+                namaSlider : $("#namaSlider").val(),
+                statusPublish : $("#statusPublish").val(),
+                baseSlider : resp,
+                idEdit : idEdit,
+                },
+        url: url+'&tipe=saveEditSlider',
+          success: function(data) {
           $("#LoadingImage").hide();
-          refreshList();
-        }else{
-          // alert(resp.err);
-          swal({
-            position: 'top-right',
-            type: 'warning',
-            title: (resp.err),
-            showConfirmButton: true,
-            timer: 5000
-          });
-          $("#LoadingImage").hide();
-        }
-      }
+          var resp = eval('(' + data + ')');
+            if(resp.err==''){
+              suksesAlert("Data Tersimpan");
+            }else{
+              errorAlert(resp.err);
+            }
+          }
+      });
   });
 }
-
 function imageChanged(){
   var me= this;
-  var filesSelected = document.getElementById("imageSlider").files;
+  var filesSelected = document.getElementById("imageProduk").files;
   if (filesSelected.length > 0)
   {
     var fileToLoad = filesSelected[0];
@@ -158,14 +68,115 @@ function imageChanged(){
 
     fileReader.onload = function(fileLoadedEvent)
     {
-      var textAreaFileContents = document.getElementById
-      (
-        "gambarSlider"
-      );
+      // var textAreaFileContents = document.getElementById
+      // (
+      //   "gambarProduk"
+      // );
+      //
+      // textAreaFileContents.value = fileLoadedEvent.target.result;
 
-      textAreaFileContents.value = fileLoadedEvent.target.result;
+
+      $("#gambarSlider").attr('src',fileLoadedEvent.target.result);
+      $(".cr-image").attr('src',fileLoadedEvent.target.result);
+      $("#statusKosong").val('1');
     };
 
     fileReader.readAsDataURL(fileToLoad);
+  }
+}
+function refreshList(){
+    window.location = "pages.php?page=slider" ;
+}
+function loadTable(){
+  $.ajax({
+    type:'POST',
+
+    url: url+'&tipe=loadTable',
+      success: function(data) {
+      var resp = eval('(' + data + ')');
+        if(resp.err==''){
+          $("#datatables").html(resp.content.tabelUser);
+          $('#datatables').DataTable({
+            "pagingType": "full_numbers",
+            "lengthMenu": [
+                [10, 25, 50, -1],
+                [10, 25, 50, "Semua"]
+            ],
+            responsive: true,
+            language: {
+                search: "_INPUT_ &nbsp",
+                searchPlaceholder: "Cari data",
+            },
+            "oLanguage": {
+              "sLengthMenu": "Data perhalaman &nbsp _MENU_ ",
+            },
+            "bSortable": false,
+            "ordering": false,
+            "dom": '<"top"fl>rt<"bottom"ip><"clear">'
+          });
+          $('.dataTables_filter').addClass('pull-left');
+
+        }else{
+          alert(resp.err);
+        }
+      }
+  });
+}
+function Baru(){
+  window.location = "pages.php?page=slider&action=baru" ;
+}
+function Batal(){
+  window.location = "pages.php?page=slider" ;
+}
+function Edit(){
+  var errMsg = getJumlahChecked("slider");
+  if(errMsg == ''){
+    $.ajax({
+      type:'POST',
+      data : $("#formSlider").serialize(),
+      url: url+'&tipe=Edit',
+        success: function(data) {
+        var resp = eval('(' + data + ')');
+          if(resp.err==''){
+            window.location = "pages.php?page=slider&action=edit&idEdit="+resp.content.idEdit;
+          }else{
+             errorAlert(resp.err);
+          }
+        }
+    });
+  }else{
+      errorAlert(errMsg);
+  }
+}
+function Hapus(){
+  var errMsg = getJumlahChecked("slider");
+  if(errMsg == '' || errMsg=='Pilih hanya satu data'){
+    swal({
+      title: "Yakin Hapus Data",
+      type: "warning",
+      showCancelButton: true,
+      confirmButtonColor: '#DD6B55',
+      confirmButtonText: 'Ya',
+      cancelButtonText: "Tidak"
+   }).then(
+         function () {
+           $.ajax({
+             type:'POST',
+             data : $("#formSlider").serialize(),
+             url: url+'&tipe=Hapus',
+               success: function(data) {
+               var resp = eval('(' + data + ')');
+                 if(resp.err==''){
+                    suksesAlert("Data Terhapus");
+                 }else{
+                    errorAlert(resp.err);
+                 }
+               }
+           });
+         },
+         function () { return false; });
+
+  }else{
+      errorAlert(errMsg);
   }
 }

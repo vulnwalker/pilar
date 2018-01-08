@@ -3,36 +3,47 @@ function saveInformasi(){
   $.ajax({
     type:'POST',
     data : {
-      isiInformasi : $("#summernote").code(),
-      judulInformasi : $("#judulInformasi").val(),
-      statusPublish : $("#statusPublish").val(),
-      posisiInformasi : $('input[name=posisiInformasi]:checked').val(),
+            statusPublish : $("#statusPublish").val(),
+            judulInformasi : $("#judulInformasi").val(),
+            isiInformasi : $("#isiInformasi").froalaEditor('html.get'),
     },
     url: url+'&tipe=saveInformasi',
       success: function(data) {
+      $("#LoadingImage").hide();
       var resp = eval('(' + data + ')');
         if(resp.err==''){
-          $("#LoadingImage").hide();
-          refreshList();
+          suksesAlert("Data Tersimpan");
         }else{
-          // alert(resp.err);
-          swal({
-            position: 'top-right',
-            type: 'warning',
-            title: (resp.err),
-            showConfirmButton: true,
-            timer: 5000
-          });
-          $("#LoadingImage").hide();
+          errorAlert(resp.err);
         }
       }
   });
 }
-
-function refreshList(){
-    window.location.reload();
+function saveEditInformasi(idEdit){
+  $("#LoadingImage").attr('style','display:block');
+  $.ajax({
+    type:'POST',
+    data : {
+            statusPublish : $("#statusPublish").val(),
+            judulInformasi : $("#judulInformasi").val(),
+            isiInformasi : $("#isiInformasi").froalaEditor('html.get'),
+            idEdit : idEdit,
+    },
+    url: url+'&tipe=saveEditInformasi',
+      success: function(data) {
+      $("#LoadingImage").hide();
+      var resp = eval('(' + data + ')');
+        if(resp.err==''){
+          suksesAlert("Data Tersimpan");
+        }else{
+          errorAlert(resp.err);
+        }
+      }
+  });
 }
-
+function refreshList(){
+    window.location = "pages.php?page=informasi" ;
+}
 function loadTable(){
   $.ajax({
     type:'POST',
@@ -43,122 +54,86 @@ function loadTable(){
         if(resp.err==''){
           $("#datatables").html(resp.content.tabelInformasi);
           $('#datatables').DataTable({
-              "pagingType": "full_numbers",
-              "lengthMenu": [
-                  [10, 25, 50, -1],
-                  [10, 25, 50, "All"]
-              ],
-              responsive: true,
-              language: {
-                  search: "_INPUT_",
-                  searchPlaceholder: "Search records",
-              }
-
+            "pagingType": "full_numbers",
+            "lengthMenu": [
+                [10, 25, 50, -1],
+                [10, 25, 50, "Semua"]
+            ],
+            responsive: true,
+            language: {
+                search: "_INPUT_ &nbsp",
+                searchPlaceholder: "Cari data",
+            },
+            "oLanguage": {
+              "sLengthMenu": "Data perhalaman &nbsp _MENU_ ",
+            },
+            "bSortable": false,
+            "ordering": false,
+            "dom": '<"top"fl>rt<"bottom"ip><"clear">'
           });
+          $('.dataTables_filter').addClass('pull-left');
+
         }else{
           alert(resp.err);
         }
       }
   });
 }
-
-
-function deleteInformasi(id){
-  $.ajax({
-    type:'POST',
-    data : {id : id},
-    url: url+'&tipe=deleteInformasi',
-      success: function(data) {
-      var resp = eval('(' + data + ')');
-        if(resp.err==''){
-          refreshList();
-        }else{
-          alert(resp.err);
-        }
-      }
-  });
+function Baru(){
+  window.location = "pages.php?page=informasi&action=baru" ;
 }
-function clearTemp(){
-  $("#data2").text("Baru");
-  $("#data2").click();
+function Batal(){
+  window.location = "pages.php?page=informasi" ;
 }
-function baruInformasi(){
-
-          // $("#formInformasiBaru").modal();
-          $("#judulInformasi").val("");
-
-          $("#kiri").attr("checked",true);
-
-          $("#summernote").code("");
-          $("#buttonSubmit").attr("onclick","saveInformasi()");
-
-}
-function updateInformasi(id){
-  $("#LoadingImage").attr('style','display:block');
-  $.ajax({
-    type:'POST',
-    data : {id : id},
-    url: url+'&tipe=updateInformasi',
-      success: function(data) {
-      var resp = eval('(' + data + ')');
-        if(resp.err==''){
-          $("#LoadingImage").hide();
-          $("#data2").text("Edit");
-          $("#data2").click();
-          $("#judulInformasi").val(resp.content.judulInformasi);
-          $("#statusPublish").val(resp.content.statusPublish);
-          if(resp.content.posisi == "1"){
-            $("#kiri").attr("checked",true);
+function Edit(){
+  var errMsg = getJumlahChecked("informasi");
+  if(errMsg == ''){
+    $.ajax({
+      type:'POST',
+      data : $("#forminformasi").serialize(),
+      url: url+'&tipe=Edit',
+        success: function(data) {
+        var resp = eval('(' + data + ')');
+          if(resp.err==''){
+            window.location = "pages.php?page=informasi&action=edit&idEdit="+resp.content.idEdit;
           }else{
-            $("#kanan").attr("checked",true);
+             errorAlert(resp.err);
           }
-          $("#summernote").code(resp.content.isiInformasi);
-          $("#buttonSubmit").attr("onclick","saveEditInformasi("+id+")");
-          // $("#isiInformasi").val(resp.content.isiInformasi);
-        }else{
-          // alert(resp.err);
-          swal({
-            position: 'top-right',
-            type: 'warning',
-            title: (resp.err),
-            showConfirmButton: true,
-            timer: 5000
-          });
-          $("#LoadingImage").hide();
         }
-      }
-  });
+    });
+  }else{
+      errorAlert(errMsg);
+  }
 }
+function Hapus(){
+  var errMsg = getJumlahChecked("informasi");
+  if(errMsg == '' || errMsg=='Pilih hanya satu data'){
+    swal({
+      title: "Yakin Hapus Data",
+      type: "warning",
+      showCancelButton: true,
+      confirmButtonColor: '#DD6B55',
+      confirmButtonText: 'Ya',
+      cancelButtonText: "Tidak"
+   }).then(
+         function () {
+           $.ajax({
+             type:'POST',
+             data : $("#forminformasi").serialize(),
+             url: url+'&tipe=Hapus',
+               success: function(data) {
+               var resp = eval('(' + data + ')');
+                 if(resp.err==''){
+                    suksesAlert("Data Terhapus");
+                 }else{
+                    errorAlert(resp.err);
+                 }
+               }
+           });
+         },
+         function () { return false; });
 
-
-function saveEditInformasi(idEdit){
-  $("#LoadingImage").attr('style','display:block');
-  $.ajax({
-    type:'POST',
-    data : {
-            idEdit : idEdit,
-            isiInformasi : $("#summernote").code(),
-            judulInformasi : $("#judulInformasi").val(),
-            statusPublish : $("#statusPublish").val(),
-            posisiInformasi : $('input[name=posisiInformasi]:checked').val(),
-    },
-    url: url+'&tipe=saveEditInformasi',
-      success: function(data) {
-      var resp = eval('(' + data + ')');
-        if(resp.err==''){
-          $("#LoadingImage").hide();
-          refreshList();
-        }else{
-          // alert(resp.err);
-          swal({
-            position: 'top-right',
-            type: 'warning',
-            title: (resp.err),
-            showConfirmButton: true,
-            timer: 5000
-          });
-          $("#LoadingImage").hide();
-        }
-      }
-  });
+  }else{
+      errorAlert(errMsg);
+  }
 }

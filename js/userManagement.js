@@ -5,29 +5,36 @@ function saveUser(){
     data : $("#formUser").serialize(),
     url: url+'&tipe=saveUser',
       success: function(data) {
+      $("#LoadingImage").hide();
       var resp = eval('(' + data + ')');
         if(resp.err==''){
-          $("#LoadingImage").hide();
-          refreshList();
+          suksesAlert("Data Tersimpan");
         }else{
-          // alert(resp.err);
-          swal({
-            position: 'top-right',
-            type: 'warning',
-            title: (resp.err),
-            showConfirmButton: true,
-            timer: 5000
-          });
-          $("#LoadingImage").hide();
+          errorAlert(resp.err);
         }
       }
   });
 }
-
-function refreshList(){
-    window.location.reload();
+function saveEditUser(idEdit){
+  $("#LoadingImage").attr('style','display:block');
+  $.ajax({
+    type:'POST',
+    data : $("#formUser").serialize()+"&idEdit="+idEdit,
+    url: url+'&tipe=saveEditUser',
+      success: function(data) {
+      $("#LoadingImage").hide();
+      var resp = eval('(' + data + ')');
+        if(resp.err==''){
+          suksesAlert("Data Tersimpan");
+        }else{
+          errorAlert(resp.err);
+        }
+      }
+  });
 }
-
+function refreshList(){
+    window.location = "pages.php?page=userManagement" ;
+}
 function loadTable(){
   $.ajax({
     type:'POST',
@@ -38,95 +45,86 @@ function loadTable(){
         if(resp.err==''){
           $("#datatables").html(resp.content.tabelUser);
           $('#datatables').DataTable({
-              "pagingType": "full_numbers",
-              "lengthMenu": [
-                  [10, 25, 50, -1],
-                  [10, 25, 50, "Semua"]
-              ],
-              responsive: true,
-              language: {
-                  search: "_INPUT_",
-                  searchPlaceholder: "Cari data",
-              },
-              "oLanguage": {
-                "sLengthMenu": "Data perhalaman &nbsp _MENU_ ",
-              },
-              "bSortable": false,
-              "ordering": false
-              // "aaSorting" : [[]]
+            "pagingType": "full_numbers",
+            "lengthMenu": [
+                [10, 25, 50, -1],
+                [10, 25, 50, "Semua"]
+            ],
+            responsive: true,
+            language: {
+                search: "_INPUT_ &nbsp",
+                searchPlaceholder: "Cari data",
+            },
+            "oLanguage": {
+              "sLengthMenu": "Data perhalaman &nbsp _MENU_ ",
+            },
+            "bSortable": false,
+            "ordering": false,
+            "dom": '<"top"fl>rt<"bottom"ip><"clear">'
           });
+          $('.dataTables_filter').addClass('pull-left');
+
         }else{
           alert(resp.err);
         }
       }
   });
 }
-
-
-function deleteUser(id){
-  $.ajax({
-    type:'POST',
-    data : {id : id},
-    url: url+'&tipe=deleteUser',
-      success: function(data) {
-      var resp = eval('(' + data + ')');
-        if(resp.err==''){
-          refreshList();
-        }else{
-          alert(resp.err);
-        }
-      }
-  });
+function Baru(){
+  window.location = "pages.php?page=userManagement&action=baru" ;
 }
- function checkSemua(n,fldName,elHeaderChecked,elJmlCek) {
-
-   if (!fldName) {
-     fldName = 'cb';
-   }
-   if (!elHeaderChecked) {
-     elHeaderChecked = 'toggle';
-   }
-   var c = document.getElementById(elHeaderChecked).checked;
-   var n2 = 0;
-   for (i=0; i < n ; i++) {
-    cb = document.getElementById(fldName+i);
-    if (cb) {
-      cb.checked = c;
-
-      //  thisChecked($("#"+fldName+i).val(),fldName+i);
-      n2++;
-    }
-   }
-   if (c) {
-    document.getElementById(elJmlCek).value = n2;
-   } else {
-    document.getElementById(elJmlCek).value = 0;
-   }
-   }
-
-function saveEditUser(idEdit){
-  $("#LoadingImage").attr('style','display:block');
-  $.ajax({
-    type:'POST',
-    data : $("#formUser").serialize()+"&idEdit="+idEdit,
-    url: url+'&tipe=saveEditUser',
-      success: function(data) {
-      var resp = eval('(' + data + ')');
-        if(resp.err==''){
-          $("#LoadingImage").hide();
-          refreshList();
-        }else{
-
-          // alert(resp.err);
-          swal({
-            position: 'top-right',
-            type: 'warning',
-            title: (resp.err),
-            showConfirmButton: true,
-            timer: 5000
-          });
-          $("#LoadingImage").hide();
+function Batal(){
+  window.location = "pages.php?page=userManagement" ;
+}
+function Edit(){
+  var errMsg = getJumlahChecked("userManagement");
+  if(errMsg == ''){
+    $.ajax({
+      type:'POST',
+      data : $("#formUserManagement").serialize(),
+      url: url+'&tipe=Edit',
+        success: function(data) {
+        var resp = eval('(' + data + ')');
+          if(resp.err==''){
+            window.location = "pages.php?page=userManagement&action=edit&idEdit="+resp.content.idEdit;
+          }else{
+             errorAlert(resp.err);
+          }
         }
-      }
-  });
+    });
+  }else{
+      errorAlert(errMsg);
+  }
+}
+function Hapus(){
+  var errMsg = getJumlahChecked("userManagement");
+  if(errMsg == '' || errMsg=='Pilih hanya satu data'){
+    swal({
+      title: "Yakin Hapus Data",
+      type: "warning",
+      showCancelButton: true,
+      confirmButtonColor: '#DD6B55',
+      confirmButtonText: 'Ya',
+      cancelButtonText: "Tidak"
+   }).then(
+         function () {
+           $.ajax({
+             type:'POST',
+             data : $("#formUserManagement").serialize(),
+             url: url+'&tipe=Hapus',
+               success: function(data) {
+               var resp = eval('(' + data + ')');
+                 if(resp.err==''){
+                    suksesAlert("Data Terhapus");
+                 }else{
+                    errorAlert(resp.err);
+                 }
+               }
+           });
+         },
+         function () { return false; });
+
+  }else{
+      errorAlert(errMsg);
+  }
 }

@@ -277,6 +277,7 @@ switch($tipe){
         var url = "http://"+window.location.hostname+"/api.php?page=acara";
 
         </script>
+        
 
         <script src="js/acara.js"></script>
 
@@ -669,6 +670,26 @@ switch($tipe){
                               </div>
                           </div>
                       </div>
+                      <div class="content" hidden="hidden">
+                        <div class="container-fluid">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="card">
+                                        <div class="card-content">
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <legend>Sliders</legend>
+                                                    <div id="sliderRegular" class="slider"></div>
+                                                    <div id="sliderDouble" class="slider slider-info"></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- end card -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                   </div>
                   <?php
                 }elseif($_GET['action'] == 'edit'){
